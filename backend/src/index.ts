@@ -2,7 +2,7 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import connectDB from './config/db'
-import questionRoutes from './routes/question.routes'
+import problemRoutes from './routes/problem.routes'
 import cors from 'cors'
 
 dotenv.config() // 加载.env文件中的变量
@@ -21,7 +21,7 @@ connectDB()
 app.get('/', (req, res) => {
   res.send('API is running...')
 })
-app.use('/api', questionRoutes)
+app.use('/api', problemRoutes)
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`)

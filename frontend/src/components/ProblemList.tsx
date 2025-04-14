@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react'
-import { fetchQuestions, Question } from '../api/questionApi'
+import { fetchProblems, Problem } from '../api/problemApi'
 
 const ProblemList = () => {
-  const [questions, setQuestions] = useState<Question[]>([])
+  const [problems, setproblems] = useState<Problem[]>([])
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
 
   const load = async () => {
     try {
-      const data = await fetchQuestions(page, 50)
-      setQuestions(data.questions)
+      const data = await fetchProblems(page, 50)
+      setproblems(data.problems)
     } catch (err) {
-      console.error('❌ Error fetching questions:', err)
+      console.error('Error fetching problems:', err)
     } finally {
       setLoading(false)
     }
@@ -24,22 +24,22 @@ const ProblemList = () => {
   if (loading) {
     return <div className="p-4">Loading...</div>
   }
-  console.log('111', questions)
+  console.log('111', problems)
 
   return (
     <div className="rounded-lg m-4 px-4 py-5 border-2 bg-white flex flex-col">
-      <h2 className="text-xl font-bold">Questions</h2>
+      <h2 className="text-xl font-bold">Problems</h2>
       <div className="p-3 flex items-center justify-between border-b border-black-08 text-black-55">
         <div>Title</div>
         <div>Difficulty</div>
       </div>
-      {questions.map((q) => (
+      {problems.map((q) => (
         <div
           key={q._id}
           className={`p-2 flex items-center justify-between 
-      ${q.questionNo % 2 === 0 ? 'bg-white-dark' : 'bg-white'}`}>
-          <a href={q.questionLink} target="_blank" rel="noopener noreferrer">
-            {q.questionNo}. {q.title}
+      ${q.problemNo % 2 === 0 ? 'bg-white-dark' : 'bg-white'}`}>
+          <a href={q.problemLink} target="_blank" rel="noopener noreferrer">
+            {q.problemNo}. {q.title}
           </a>
           <div
             className={`mx-2 font-semibold text-sm
