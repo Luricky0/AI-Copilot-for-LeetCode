@@ -12,3 +12,4 @@ export type Problem = {
   examples: Example[]
   constraints: string[]
 }
+

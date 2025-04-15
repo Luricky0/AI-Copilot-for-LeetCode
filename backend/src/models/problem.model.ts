@@ -12,7 +12,7 @@ interface Iproblem extends Document {
 
 const problemSchema: Schema = new Schema({
   problemNo: { type: String, required: true },
-  title: { type: String, required: true },
+  title: { type: String, required: true, alias: 'problem' },
   acceptance: { type: Number, required: true },
   isPremium: { type: Boolean, required: true },
   difficulty: { type: String, required: true },

@@ -9,13 +9,11 @@ export interface Problem {
   solution: string
 }
 
-const BASE_URL = 'http://localhost:8080/api'
-
 const transformProblem = (dbproblem: any): Problem => {
   return {
     _id: dbproblem._id,
-    problemNo: dbproblem.problem_No, // 从数据库字段转换
-    title: dbproblem.problem,
+    problemNo: dbproblem.Problem_No, // 从数据库字段转换
+    title: dbproblem.Problem,
     acceptance: dbproblem.Acceptance,
     isPremium: dbproblem.isPremium,
     difficulty: dbproblem.Difficulty,
