@@ -10,11 +10,14 @@
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.13.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/mongoose": "^5.11.96"
   }
 }
