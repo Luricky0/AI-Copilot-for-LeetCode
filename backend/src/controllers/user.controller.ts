@@ -34,3 +34,26 @@ export const login = async(req: Request, res: Response)=>{
   }
 
 }
+
+export const register = async(req:Request, res:Response) => {
+  const {id,password} = req.body;
+  try{
+    const user = await User.findOne({id});
+    if(user){
+      return res.status(404).json(
+        {
+        message: 'User id existed'
+      }
+      );
+    }
+
+    const newUser = new User({id,password})
+    newUser.save();
+    return res.status(201)
+
+  }catch(error){
+    console.error(error)
+    return res.status(500)
+  }
+  
+}

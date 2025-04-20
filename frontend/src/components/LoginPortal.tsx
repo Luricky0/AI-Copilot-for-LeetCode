@@ -1,13 +1,20 @@
 import React, { useState } from 'react'
+import axiosInstance from '../utils/axiosInstance';
+import useUser from '../hooks/useUser';
 
 const LoginPortal = () => {
   const [username,setUsername] = useState('');
   const [password,setPassword] = useState('');
-  const onLogin = async(e:React.FormEvent) => {
-    try{
-      const res = fetch
+  const {setToken} = useUser();
 
+  const onLogin = async(e:React.FormEvent) => {
+    e.preventDefault()
+    try{
+      const res = await axiosInstance.post('/login',{id:username,password});
+      const {token} = res.data;
+      setToken(token);
     }catch(err){
+      console.error(err)
 
     }
   }
