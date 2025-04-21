@@ -1,16 +1,19 @@
 import React from 'react'
-import ProblemDisplay from './components/ProblemDisplay'
-import { sampleProblem } from './data/samples'
-import ProblemList from './components/ProblemList'
 import LoginPortal from './components/LoginPortal'
 import { UserProvider } from './contexts/userContext'
+import { BrowserRouter, useRoutes } from 'react-router-dom'
+import { routes } from './routes/routes'
+
+const AppRoutes = () => useRoutes(routes)
 
 function App() {
   return (
     <>
-    <UserProvider>
-      <LoginPortal/>
-    </UserProvider>
+      <BrowserRouter>
+        <UserProvider>
+          <AppRoutes />
+        </UserProvider>
+      </BrowserRouter>
     </>
   )
 }
