@@ -1,8 +1,8 @@
 import React from "react";
 import LoginPortal from "../components/LoginPortal";
-import useUser from "../hooks/useUser";
+import { useUserContext } from "../contexts/userContext";
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { token } = useUser();
+  const { token } = useUserContext();
   return token ? <>{children}</> : <LoginPortal />;
 };

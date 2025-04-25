@@ -9,7 +9,7 @@ interface Iuser extends Document {
 }
 
 const userSchema = new Schema({
-  userid: {
+  id: {
     type: Number,
     required: true,
     unique: true,

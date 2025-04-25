@@ -1,5 +1,7 @@
+import { useUserContext } from "../contexts/userContext";
 import useUser from "../hooks/useUser";
 import axiosInstance from "../utils/axiosInstance";
+
 export const fetchLogin = async(userHook:ReturnType<typeof useUser>,{username,password}:{username:string,password:string})=>{
   try{
     const res = await axiosInstance.post('/login',{username,password})
@@ -12,12 +14,14 @@ export const fetchLogin = async(userHook:ReturnType<typeof useUser>,{username,pa
   }
 }
 
-export const fetchRegister = async(userHook:ReturnType<typeof useUser>,{username,password}:{username:string,password:string})=>{
+export const fetchRegister = async(
+  { id, password }: { id: string; password: string },
+  { setToken }: { setToken: (token: string) => void }
+)=>{
   try{
-    const res = await axiosInstance.post('/register',{username,password})
+    const res = await axiosInstance.post('/register',{id,password})
     const {token} = res.data;
-    userHook.setToken(token);
-    userHook.setUsername(username);
+    setToken(token);
   }catch(err){
     console.error("Error fetch register api.")
     return err;

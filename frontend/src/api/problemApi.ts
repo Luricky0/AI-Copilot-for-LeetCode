@@ -1,3 +1,5 @@
+import axiosInstance from "../utils/axiosInstance"
+
 export interface Problem {
   _id: string
   problemNo: number
@@ -30,13 +32,8 @@ export const fetchProblems = async (
   totalPages: number
   totalproblems: number
 }> => {
-  const res = await fetch(`${BASE_URL}/problems?page=${page}&limit=${limit}`)
-  if (!res.ok) {
-    throw new Error('Failed to fetch problems')
-  }
-
-  const data = await res.json()
-
+  const res = await axiosInstance.get(`/problems?page=${page}&limit=${limit}`);
+  const data = res.data
   const problems = data.problems.map(transformProblem)
 
   return {

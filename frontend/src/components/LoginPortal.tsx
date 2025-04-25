@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
 import axiosInstance from '../utils/axiosInstance'
-import useUser from '../hooks/useUser'
+import { fetchRegister } from '../api/accountApi'
+import { useUserContext } from '../contexts/userContext'
 
 const LoginPortal= () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const { setToken } = useUser()
+  const { setToken } = useUserContext()
 
   const onLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -15,6 +16,14 @@ const LoginPortal= () => {
       setToken(token)
     } catch (err) {
       console.error(err)
+    }
+  }
+
+  const onRegister = async ()=>{
+    try{
+      fetchRegister({id:username,password},{setToken})
+    }catch(error){
+      console.error(error)
     }
   }
   return (
@@ -32,6 +41,7 @@ const LoginPortal= () => {
             id="username"
             className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300"
             placeholder="Enter your username"
+            onChange={(e)=>setUsername(e.target.value)}
           />
         </div>
 
@@ -46,6 +56,7 @@ const LoginPortal= () => {
             id="password"
             className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300"
             placeholder="Enter your password"
+            onChange={e=>setPassword(e.target.value)}
           />
         </div>
 
@@ -56,7 +67,8 @@ const LoginPortal= () => {
         </button>
 
         <button
-          type="submit"
+          type="button"
+          onClick={onRegister}
           className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
           Register
         </button>
