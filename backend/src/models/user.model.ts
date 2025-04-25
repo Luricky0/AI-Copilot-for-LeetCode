@@ -1,11 +1,14 @@
 import mongoose, { Schema, Document } from 'mongoose'
 import bcrypt from 'bcryptjs'
+import { ObjectId } from 'mongodb'
+
 
 interface Iuser extends Document {
   id: string
   password: string
   comparePassword(candidatePassword: string): Promise<boolean>
   isModified(path: string): boolean
+  likedProblemsIDs: ObjectId[]
 }
 
 const userSchema = new Schema({
@@ -18,6 +21,10 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  likedProblemsIDs:{
+    type: [ObjectId],
+    default:[]
+  }
 })
 
 userSchema.pre('save', async function (this: Iuser) {

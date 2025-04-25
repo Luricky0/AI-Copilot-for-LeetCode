@@ -27,10 +27,11 @@ const LoginPortal= () => {
     }
   }
   return (
-    <div className="rounded bg-white">
-      <form className="flex flex-col space-y-4" onSubmit={onLogin}>
+    <div className='h-screen flex justify-around items-center'>
+      <h1 className='text-7xl font-menlo'>Codepilot</h1>
+      <form className="rounded w-96 bg-white p-4 flex flex-col space-y-4 items-center justify-center" onSubmit={onLogin}>
         <h2>Login</h2>
-        <div>
+        <div className='w-full'>
           <label
             htmlFor="username"
             className="block text-sm font-medium text-gray-700">
@@ -45,7 +46,7 @@ const LoginPortal= () => {
           />
         </div>
 
-        <div>
+        <div className='w-full'>
           <label
             htmlFor="password"
             className="block text-sm font-medium text-gray-700">
@@ -62,14 +63,14 @@ const LoginPortal= () => {
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
+          className="w-full bg-black text-white py-2 rounded hover:bg-blue-700 transition">
           Login
         </button>
 
         <button
           type="button"
           onClick={onRegister}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
+          className="w-full bg-black text-white py-2 rounded hover:bg-blue-700 transition">
           Register
         </button>
       </form>

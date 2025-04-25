@@ -1,9 +1,11 @@
 import express from 'express'
-import { login, register } from '../controllers/user.controller'
+import { getLikedProblems, likeProblem, login, register } from '../controllers/user.controller'
 
 const router = express.Router()
 
 router.post('/login', login)
 router.post('/register', register)
+router.post('/like', likeProblem)
+router.get('/liked', getLikedProblems)
 
 export default router

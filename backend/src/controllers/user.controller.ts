@@ -1,6 +1,10 @@
 import { Request, Response } from 'express'
 import User from '../models/user.model'
 import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'
+import Problem from '../models/problem.model'
+import { ObjectId } from 'mongodb'
+import user from '../models/user.model'
 
 export const login = async (req: Request, res: Response) => {
   const { id, password } = req.body
@@ -59,4 +63,73 @@ export const register = async (req: Request, res: Response) => {
     console.error(error)
     res.status(500)
   }
+}
+
+export const likeProblem = async(req:Request, res:Response) =>{
+  const { token,problemId } = req.body;
+  try{
+    const decoded:any = jwt.verify(token,process.env.JWT_SECRET!);
+    const userId = decoded.id;
+    const user = await User.findById(userId);
+    if(!user){
+      res.status(404).json({
+        message:'User not found'
+      })
+    }else{
+      const problem = await Problem.findById(problemId);
+      if (!problem) {
+        res.status(404).json({
+          message: 'Problem not found',
+        });
+      }else{
+        if(!user.likedProblemsIDs.includes(problemId)){
+          user.likedProblemsIDs.push(problemId);
+          await user.save();
+          res.status(200).json({
+            message: 'Problem liked successfully',
+          });
+        }else{
+          user.likedProblemsIDs = user.likedProblemsIDs.filter(
+            (id) => id !== problemId
+          );
+          await user.save();
+          res.status(200).json({
+            message: 'Problem liked successfully',
+          });
+        }
+      }
+    }
+  }catch(error){
+    console.error(error);
+    res.status(500).json({
+      message: 'Server error',
+    });
+  }
+
+}
+
+export const getLikedProblems = async (req: Request, res: Response) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  console.log(token)
+  if (!token) {
+    res.status(400).json({ message: 'Token is required' });
+  }else{
+    try {
+      const decoded:any = jwt.verify(token,process.env.JWT_SECRET!);
+      const userId = decoded.id;
+      const user = await User.findOne({id:userId})
+      if (!user) {
+        res.status(404).json({ message: 'User not found' })
+      }else{
+          res.status(200).json({
+          likedProblemsIDs: user.likedProblemsIDs
+          })
+      }
+      
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({ message: 'Server error' })
+    }
+  }
+  
 }
