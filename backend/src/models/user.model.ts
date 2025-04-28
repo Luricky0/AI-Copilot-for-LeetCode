@@ -9,6 +9,7 @@ interface Iuser extends Document {
   comparePassword(candidatePassword: string): Promise<boolean>
   isModified(path: string): boolean
   likedProblemsIDs: ObjectId[]
+  completedProblemsIDs: ObjectId[]
 }
 
 const userSchema = new Schema({
@@ -22,6 +23,10 @@ const userSchema = new Schema({
     required: true,
   },
   likedProblemsIDs:{
+    type: [ObjectId],
+    default:[]
+  },
+  completedProblemsIDs:{
     type: [ObjectId],
     default:[]
   }

@@ -1,24 +1,45 @@
 import React, { useEffect, useState } from 'react'
 import { fetchProblems, Problem } from '../api/problemApi'
 import 'font-awesome/css/font-awesome.min.css'
-import { getLikedProblems } from '../api/userApi'
-import { ObjectId } from 'mongoose'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCheck } from '@fortawesome/free-solid-svg-icons'
+import { completeProblem, getCompletedProblems, getLikedProblems, likeProblem } from '../api/userApi'
 
 const ProblemList = () => {
   const [problems, setproblems] = useState<Problem[]>([])
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
-  let likedProblemsIDs: string[]
+  const [likedProblemsIDs, setLikedProblemsIDs] = useState([''])
+  const [completedProblemsIDs, setCompletedProblemsIDs] = useState([''])
 
   const load = async () => {
     try {
       const data = await fetchProblems(page, 50)
-      likedProblemsIDs = await getLikedProblems()
+      setLikedProblemsIDs(await getLikedProblems())
+      setCompletedProblemsIDs(await getCompletedProblems());
       setproblems(data.problems)
     } catch (err) {
       console.error('Error fetching problems:', err)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const onLike = async (problemId: string) => {
+    try {
+      await likeProblem(problemId)
+      load()
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const onComplete = async (problemId: string) => {
+    try {
+      await completeProblem(problemId)
+      load()
+    } catch (error) {
+      console.log(error)
     }
   }
 
@@ -29,10 +50,11 @@ const ProblemList = () => {
   if (loading) {
     return <div className="p-4">Loading...</div>
   }
-  console.log('111', problems)
 
   return (
-    <div className="rounded-lg m-4 px-4 py-5 border-2 bg-white">
+    <div>
+    <h1 className='flex items-center justify-center font-menlo text-4xl py-4'>Codepilot</h1>
+    <div className="rounded-lg mx-4 px-4 py-5 border-2 bg-white">
       <h2 className="text-xl font-bold">Problems</h2>
       <div className="p-3 grid grid-cols-[8fr_1fr_1fr] gap-4 border-b border-black-08 text-black-55">
         <div>Title</div>
@@ -58,7 +80,31 @@ const ProblemList = () => {
             }`}>
             {q.difficulty}
           </div>
-          <i className="fa fa-heart-o text-red-500 fa-2x "></i>
+          <div className="grid grid-cols-[1fr_1fr] items-center ">
+            {likedProblemsIDs?.includes(q._id) ? (
+              <i
+                className="fa fa-heart text-red-500 fa-2x"
+                onClick={() => onLike(q._id)}></i>
+            ) : (
+              <i
+                className="fa fa-heart-o text-red-500 fa-2x"
+                onClick={() => onLike(q._id)}></i>
+            )}
+
+            {completedProblemsIDs?.includes(q._id) ? (
+              <FontAwesomeIcon
+                icon={faCheck}
+                style={{ color: 'green', fontSize: '2rem' }}
+                onClick={() => onComplete(q._id)}
+              />
+            ) : (
+              <FontAwesomeIcon
+                icon={faCheck}
+                style={{ color: '#dddddd', fontSize: '2rem' }}
+                onClick={() => onComplete(q._id)}
+              />
+            )}
+          </div>
         </div>
       ))}
       <div className="flex justify-center items-center gap-4 mt-4">
@@ -76,6 +122,7 @@ const ProblemList = () => {
         </button>
       </div>
     </div>
+  </div>
   )
 }
 

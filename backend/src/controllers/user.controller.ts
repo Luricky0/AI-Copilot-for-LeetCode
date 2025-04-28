@@ -66,11 +66,15 @@ export const register = async (req: Request, res: Response) => {
 }
 
 export const likeProblem = async(req:Request, res:Response) =>{
-  const { token,problemId } = req.body;
+  const {problemId } = req.body;
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) {
+    res.status(400).json({ message: 'Token is required' });
+  }else{
   try{
     const decoded:any = jwt.verify(token,process.env.JWT_SECRET!);
     const userId = decoded.id;
-    const user = await User.findById(userId);
+    const user = await User.findOne({id:userId});
     if(!user){
       res.status(404).json({
         message:'User not found'
@@ -90,11 +94,11 @@ export const likeProblem = async(req:Request, res:Response) =>{
           });
         }else{
           user.likedProblemsIDs = user.likedProblemsIDs.filter(
-            (id) => id !== problemId
+            (id) => id != problemId
           );
           await user.save();
           res.status(200).json({
-            message: 'Problem liked successfully',
+            message: 'Problem unliked successfully',
           });
         }
       }
@@ -105,12 +109,12 @@ export const likeProblem = async(req:Request, res:Response) =>{
       message: 'Server error',
     });
   }
+}
 
 }
 
 export const getLikedProblems = async (req: Request, res: Response) => {
   const token = req.headers.authorization?.split(' ')[1];
-  console.log(token)
   if (!token) {
     res.status(400).json({ message: 'Token is required' });
   }else{
@@ -123,6 +127,75 @@ export const getLikedProblems = async (req: Request, res: Response) => {
       }else{
           res.status(200).json({
           likedProblemsIDs: user.likedProblemsIDs
+          })
+      }
+      
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({ message: 'Server error' })
+    }
+  }
+  
+}
+
+export const completeProblem = async (req:Request, res:Response) =>{
+  const {problemId} = req.body;
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) {
+    res.status(400).json({ message: 'Token is required' });
+  }else{
+    try{
+      const decoded:any = jwt.verify(token,process.env.JWT_SECRET!);
+      const user = await User.findOne({id:decoded.id});
+      if(!user){
+        res.status(404).json({
+          message:'No such user'
+        })
+      }else{
+        const problem = await Problem.findById(problemId);
+        if (!problem) {
+          res.status(404).json({
+            message: 'Problem not found',
+          });
+        }else{
+          if(!user.completedProblemsIDs.includes(problemId)){
+            user.completedProblemsIDs.push(problemId);
+            await user.save();
+            res.status(200).json({
+              message: 'Problem marked as completed successfully',
+            });
+          }else{
+            user.completedProblemsIDs = user.completedProblemsIDs.filter(
+              (id) => id != problemId
+            );
+            await user.save();
+            res.status(200).json({
+              message: 'Problem marked as not completed successfully',
+            });
+          }
+      }
+
+      }
+    }catch(error){
+      console.log(error);
+    }
+  }
+}
+
+export const getCompletedProblems = async (req: Request, res: Response) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) {
+    res.status(400).json({ message: 'Token is required' });
+  }else{
+    try {
+      const decoded:any = jwt.verify(token,process.env.JWT_SECRET!);
+      const userId = decoded.id;
+      const user = await User.findOne({id:userId})
+      if (!user) {
+        res.status(404).json({ message: 'User not found' })
+      }else{
+          res.status(200).json({
+          completedProblemsIDs: user.completedProblemsIDs
           })
       }
       
