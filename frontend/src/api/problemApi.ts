@@ -1,27 +1,29 @@
 import axiosInstance from "../utils/axiosInstance"
 
-export interface Problem {
-  _id: string
-  problemNo: number
-  title: string
-  acceptance: number
-  isPremium: boolean
-  difficulty: string
-  problemLink: string
-  solution: string
+interface TopicTag {
+  name: string;
+  slug: string;
 }
 
-const transformProblem = (dbproblem: any): Problem => {
-  return {
-    _id: dbproblem._id,
-    problemNo: dbproblem.Problem_No, // 从数据库字段转换
-    title: dbproblem.Problem,
-    acceptance: dbproblem.Acceptance,
-    isPremium: dbproblem.isPremium,
-    difficulty: dbproblem.Difficulty,
-    problemLink: dbproblem.problem_Link,
-    solution: dbproblem.Solution,
-  }
+export interface Problem extends Document {
+  _id:string;
+  problemId: string;
+  title: string;
+  content: string;
+  difficulty: string;
+  likes: number;
+  dislikes: number;
+  exampleTestcases: string;
+  codeSnippets: { lang: string, code: string }[];
+  topicTags: TopicTag[];
+  stats: {
+    totalAccepted: string;
+    totalSubmission: string;
+    totalAcceptedRaw: number;
+    totalSubmissionRaw: number;
+    acRate: string;
+  };
+  hints: string[];
 }
 
 export const fetchProblems = async (
@@ -34,7 +36,7 @@ export const fetchProblems = async (
 }> => {
   const res = await axiosInstance.get(`/problems?page=${page}&limit=${limit}`);
   const data = res.data
-  const problems = data.problems.map(transformProblem)
+  const problems = data.problems
 
   return {
     problems,

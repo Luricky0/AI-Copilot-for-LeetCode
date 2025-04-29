@@ -4,12 +4,12 @@ export type Example = {
   explanation?: string
 }
 
-export type Problem = {
-  id: string
-  title: string
-  difficulty: 'Easy' | 'Medium' | 'Hard'
-  description: string
-  examples: Example[]
-  constraints: string[]
-}
+// export type Problem = {
+//   id: string
+//   title: string
+//   difficulty: 'Easy' | 'Medium' | 'Hard'
+//   description: string
+//   examples: Example[]
+//   constraints: string[]
+// }
 

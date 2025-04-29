@@ -1,21 +1,29 @@
-import { RouteObject } from "react-router-dom"
-import LoginPortal from "../components/LoginPortal"
-import React from "react"
-import { ProtectedRoute } from "./ProtectedRoute"
-import ProblemList from "../components/ProblemList"
+import { RouteObject } from 'react-router-dom'
+import LoginPortal from '../components/LoginPortal'
+import React from 'react'
+import { ProtectedRoute } from './ProtectedRoute'
+import ProblemList from '../components/ProblemList'
+import ProblemDisplay from '../components/ProblemDisplay'
 
-
-export const routes:RouteObject[]=[
+export const routes: RouteObject[] = [
   {
     path: '/login',
-    element: <LoginPortal/>
+    element: <LoginPortal />,
   },
   {
-    path:'/',
-    element:(
+    path: '/',
+    element: (
       <ProtectedRoute>
-        <ProblemList/>
+        <ProblemList />
       </ProtectedRoute>
     )
-  }
+  },
+  {
+    path: '/detail/:problemId',
+    element:(
+      <ProtectedRoute>
+        <ProblemDisplay />
+      </ProtectedRoute>
+    ) 
+  },
 ]
