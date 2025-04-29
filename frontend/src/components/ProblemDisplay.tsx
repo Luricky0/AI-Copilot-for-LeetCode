@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { Example } from '../type'
 import { Problem } from '../api/problemApi'
-import '../styles/ProblemDisplay'
+import '../styles/ProblemDisplay.scss'
 
 const ExamplesDisplay = ({ examples }: { examples: Example[] }) => {
   return (
@@ -53,7 +53,11 @@ const ProblemDisplay = () => {
         {problem?.problemId}. {problem?.title}
       </h1>
       <div
-        className={`w-12 h-8 flex items-center justify-center font-semibold px-2 py-1 rounded text-white
+        className={`${
+          problem?.difficulty === 'Medium'
+            ? 'w-16'
+            : 'w-12'
+        } h-8 flex items-center justify-center font-semibold px-2 py-1 rounded text-white
     ${
       problem?.difficulty === 'Easy'
         ? 'bg-green-500'
