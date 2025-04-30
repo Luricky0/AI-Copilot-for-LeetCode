@@ -9,9 +9,7 @@ import {
   getLikedProblems,
   likeProblem,
 } from '../api/userApi'
-import { useNavigate } from 'react-router-dom';
-
-
+import { useNavigate } from 'react-router-dom'
 
 const ProblemList = () => {
   const [problems, setproblems] = useState<Problem[]>([])
@@ -19,7 +17,7 @@ const ProblemList = () => {
   const [loading, setLoading] = useState(true)
   const [likedProblemsIDs, setLikedProblemsIDs] = useState([''])
   const [completedProblemsIDs, setCompletedProblemsIDs] = useState([''])
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const load = async () => {
     try {
@@ -53,8 +51,8 @@ const ProblemList = () => {
     }
   }
 
-  const onClick = (problem:Problem)=>{
-    navigate(`/detail/${problem._id}`, { state: { problem } });
+  const onClick = (problem: Problem) => {
+    navigate(`/detail/${problem._id}`, { state: { problem } })
   }
 
   useEffect(() => {
@@ -79,11 +77,13 @@ const ProblemList = () => {
         </div>
         {problems.map((q) => (
           <div
-            onClick={()=>onClick(q)}
             key={q.problemId}
             className={`p-2 grid grid-cols-[8fr_1fr_1fr] gap-4 items-center 
             ${Number(q.problemId) % 2 === 0 ? 'bg-white-dark' : 'bg-white'}`}>
-            <a target="_blank" rel="noopener noreferrer">
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => onClick(q)}>
               {q.problemId}. {q.title}
             </a>
             <div

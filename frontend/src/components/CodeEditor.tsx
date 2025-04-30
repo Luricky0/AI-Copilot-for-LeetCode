@@ -2,11 +2,14 @@ import React, { useEffect, useState } from 'react'
 import Editor from '@monaco-editor/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
+  faBook,
+  faBookOpen,
   faCheck,
   faLightbulb,
   faRobot,
 } from '@fortawesome/free-solid-svg-icons'
 import { Problem } from '../api/problemApi'
+import { completeProblem, getCompletedProblems } from '../api/userApi'
 const CodeLangMap: Record<number, string> = {
   0: 'cpp',
   1: 'java',
@@ -32,9 +35,41 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
   const [lang, setLang] = useState(0)
   const [code, setCode] = useState(codeSnippets[lang]?.code || '')
   const [showHint, setShowHint] = useState(false)
+  const [onAIState, setOnAIState] = useState(false)
+  const [isAILoading, setIsAILoading] = useState(false)
+  const [completedProblemsIDs, setCompletedProblemsIDs] = useState([''])
+
+  const load = async () => {
+    try {
+      setCompletedProblemsIDs(await getCompletedProblems())
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  const onComplete = async (problemId: string) => {
+    try {
+      await completeProblem(problemId)
+      load()
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const onAI = async () => {
+    setOnAIState(true)
+    setIsAILoading(true)
+    setIsAILoading(false)
+  }
+
   useEffect(() => {
     setCode(codeSnippets[lang]?.code || '')
   }, [lang, codeSnippets])
+
+  useEffect(() => {
+    load()
+  })
+
   return (
     <div className="h-screen rounded-lg px-4 border-2 bg-white h-scrren">
       <h2 className="my-2 font-bold">Code</h2>
@@ -66,13 +101,40 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
             </div>
           </div>
 
-          <div className="flex flex-row-reverse gap-2 px-2">
-            <FontAwesomeIcon icon={faRobot} size="2x" />
+          <div className="flex flex-row-reverse gap-3 px-2">
+            <FontAwesomeIcon
+              icon={faCheck}
+              size="2x"
+              style={
+                completedProblemsIDs.includes(problem._id)
+                  ? { color: 'green' }
+                  : {}
+              }
+              onClick={() => onComplete(problem._id)}
+              title="Mark as completed"
+            />
+            <FontAwesomeIcon
+              icon={faBookOpen}
+              size="2x"
+              title="Show the answer"
+            />
+            <FontAwesomeIcon
+              icon={faRobot}
+              size="2x"
+              title="AI review"
+              onClick={() => {
+                if (!isAILoading) {
+                  onAI()
+                }
+              }}
+              style={onAIState ? { color: 'purple' } : {}}
+            />
             <FontAwesomeIcon
               icon={faLightbulb}
               size="2x"
               onClick={() => setShowHint(!showHint)}
               style={showHint ? { color: 'orange' } : {}}
+              title="Show the hints"
             />
           </div>
         </div>
@@ -85,6 +147,7 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
             theme="vs-light"
           />
         </div>
+        <div className="rounded bg-white-dark m-1"></div>
       </div>
     </div>
   )
