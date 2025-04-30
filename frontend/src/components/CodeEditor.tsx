@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import Editor from '@monaco-editor/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faLightbulb, faRobot } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCheck,
+  faLightbulb,
+  faRobot,
+} from '@fortawesome/free-solid-svg-icons'
+import { Problem } from '../api/problemApi'
 const CodeLangMap: Record<number, string> = {
   0: 'cpp',
   1: 'java',
@@ -22,13 +27,11 @@ const CodeLangNum: Record<string, number> = {
   JavaScript: 6,
   TypeScript: 7,
 }
-const CodeEditor = ({
-  codeSnippets,
-}: {
-  codeSnippets: { lang: string; code: string }[]
-}) => {
+const CodeEditor = ({ problem }: { problem: Problem }) => {
+  const codeSnippets = problem.codeSnippets
   const [lang, setLang] = useState(0)
   const [code, setCode] = useState(codeSnippets[lang]?.code || '')
+  const [showHint, setShowHint] = useState(false)
   useEffect(() => {
     setCode(codeSnippets[lang]?.code || '')
   }, [lang, codeSnippets])
@@ -37,23 +40,40 @@ const CodeEditor = ({
       <h2 className="my-2 font-bold">Code</h2>
       <div className="flex flex-col h-[94vh]">
         <div className="h-16 flex justify-between items-center">
-          <select
-            id="lang-select"
-            value={lang}
-            onChange={(e) => {
-              console.log(Number(e.target.value))
-              setLang(Number(e.target.value))
-            }}
-            className="border rounded px-2 py-1">
-            {Object.entries(CodeLangMap).map(([key, value]) => (
-              <option key={key} value={key}>
-                {value}
-              </option>
-            ))}
-          </select>
+          <div className="flex">
+            <select
+              id="lang-select"
+              value={lang}
+              onChange={(e) => {
+                console.log(Number(e.target.value))
+                setLang(Number(e.target.value))
+              }}
+              className="border rounded px-2 py-1">
+              {Object.entries(CodeLangMap).map(([key, value]) => (
+                <option key={key} value={key}>
+                  {value}
+                </option>
+              ))}
+            </select>
+            <div className="mx-2 flex gap-2">
+              {showHint ? (
+                problem.topicTags.map((item) => (
+                  <div className="rounded bg-white-dark p-1">{item.name}</div>
+                ))
+              ) : (
+                <></>
+              )}
+            </div>
+          </div>
+
           <div className="flex flex-row-reverse gap-2 px-2">
-            <FontAwesomeIcon icon={faRobot}  size='2x'/>
-            <FontAwesomeIcon icon={faLightbulb}  size='2x'/>
+            <FontAwesomeIcon icon={faRobot} size="2x" />
+            <FontAwesomeIcon
+              icon={faLightbulb}
+              size="2x"
+              onClick={() => setShowHint(!showHint)}
+              style={showHint ? { color: 'orange' } : {}}
+            />
           </div>
         </div>
         <div className="flex-1 overflow-hidden">

@@ -12,7 +12,7 @@ export default function ProblemPage() {
   return(
     <div className="h-screen w-screen grid grid-cols-[1fr_1fr]">
       {problem?<ProblemDisplay problem={problem}/>:<></>}
-      {problem?<CodeEditor codeSnippets={problem.codeSnippets}/>:<></>}
+      {problem?<CodeEditor problem={problem}/>:<></>}
     </div>
   )
 }
