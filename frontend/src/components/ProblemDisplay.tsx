@@ -41,14 +41,14 @@ const ConstraintsDisplay = ({ constraints }: { constraints: string[] }) => {
     </div>
   )
 }
-const ProblemDisplay = () => {
-  const location = useLocation()
-  const [problem, setProblem] = useState<Problem | null>(null)
-  useEffect(() => {
-    setProblem(location.state.problem)
-  })
+const ProblemDisplay = ({problem}:{problem:Problem}) => {
+  // const location = useLocation()
+  // const [problem, setProblem] = useState<Problem | null>(null)
+  // useEffect(() => {
+  //   setProblem(location.state.problem)
+  // })
   return (
-    <div className="rounded-lg m-4 px-4 py-5 border-2 bg-white flex flex-col gap-4">
+    <div className="h-screen rounded-lg px-4 py-5 border-2 bg-white flex flex-col gap-4">
       <h1 className="text-2xl bold font-bold">
         {problem?.problemId}. {problem?.title}
       </h1>
@@ -69,7 +69,7 @@ const ProblemDisplay = () => {
       </div>
       {problem ? (
         <div
-          className="problemContent"
+          className="problemContent overflow-scroll"
           dangerouslySetInnerHTML={{ __html: problem.content }}
         />
       ) : (

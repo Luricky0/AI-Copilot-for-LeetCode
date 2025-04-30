@@ -4,6 +4,7 @@ import React from 'react'
 import { ProtectedRoute } from './ProtectedRoute'
 import ProblemList from '../components/ProblemList'
 import ProblemDisplay from '../components/ProblemDisplay'
+import ProblemPage from '../pages/ProblePage'
 
 export const routes: RouteObject[] = [
   {
@@ -16,14 +17,14 @@ export const routes: RouteObject[] = [
       <ProtectedRoute>
         <ProblemList />
       </ProtectedRoute>
-    )
+    ),
   },
   {
     path: '/detail/:problemId',
-    element:(
+    element: (
       <ProtectedRoute>
-        <ProblemDisplay />
+        <ProblemPage />
       </ProtectedRoute>
-    ) 
+    ),
   },
 ]
