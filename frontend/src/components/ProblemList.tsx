@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { fetchProblems, Problem } from '../api/problemApi'
 import 'font-awesome/css/font-awesome.min.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -13,24 +13,38 @@ import { useNavigate } from 'react-router-dom'
 
 const ProblemList = () => {
   const [problems, setproblems] = useState<Problem[]>([])
+  const [totalPages, setTotalPages] = useState(0)
   const [page, setPage] = useState(1)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [difficultyFilter, setDifficultyFilter] = useState('All')
   const [loading, setLoading] = useState(true)
   const [likedProblemsIDs, setLikedProblemsIDs] = useState([''])
   const [completedProblemsIDs, setCompletedProblemsIDs] = useState([''])
+  const debounceTimeout = useRef<any>(null)
   const navigate = useNavigate()
 
   const load = async () => {
-    try {
-      const data = await fetchProblems(page, 50)
-      setLikedProblemsIDs(await getLikedProblems())
-      setCompletedProblemsIDs(await getCompletedProblems())
-      setproblems(data.problems)
-      console.log(data.problems)
-    } catch (err) {
-      console.error('Error fetching problems:', err)
-    } finally {
-      setLoading(false)
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current)
     }
+    debounceTimeout.current = setTimeout(async () => {
+      try {
+        const data = await fetchProblems(
+          page,
+          30,
+          searchQuery,
+          difficultyFilter
+        )
+        setLikedProblemsIDs(await getLikedProblems())
+        setCompletedProblemsIDs(await getCompletedProblems())
+        setproblems(data.problems)
+        setTotalPages(data.totalPages)
+      } catch (err) {
+        console.error('Error fetching problems:', err)
+      } finally {
+        setLoading(false)
+      }
+    }, 500)
   }
 
   const onLike = async (problemId: string) => {
@@ -57,7 +71,7 @@ const ProblemList = () => {
 
   useEffect(() => {
     load()
-  }, [page])
+  }, [page, difficultyFilter])
 
   if (loading) {
     return <div className="p-4">Loading...</div>
@@ -69,7 +83,31 @@ const ProblemList = () => {
         Codepilot
       </h1>
       <div className="rounded-lg mx-4 px-4 py-5 border-2 bg-white">
-        <h2 className="text-xl font-bold">Problems</h2>
+        <div className="flex items-center gap-3">
+          <h2 className="text-xl font-bold">Problems</h2>
+          <input
+            type="text"
+            placeholder="Search..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') load()
+            }}
+            onBlur={() => load()}
+            className="border px-2 py-1 rounded"
+          />
+
+          <select
+            value={difficultyFilter}
+            onChange={(e) => setDifficultyFilter(e.target.value)}
+            className="border px-2 py-1 rounded">
+            <option value="All">All</option>
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+          </select>
+        </div>
+
         <div className="p-3 grid grid-cols-[8fr_1fr_1fr] gap-4 border-b border-black-08 text-black-55">
           <div>Title</div>
           <div>Difficulty</div>
@@ -131,7 +169,9 @@ const ProblemList = () => {
             className="px-4 py-2 bg-black-08 rounded disabled:opacity-50">
             Last
           </button>
-          <span className="text-gray-600">Page {page}</span>
+          <span className="text-gray-600">
+            Page {page} / {totalPages}
+          </span>
           <button
             onClick={() => setPage(page + 1)}
             className="px-4 py-2 bg-black-08 rounded">

@@ -1,15 +1,35 @@
 import { Request, Response } from 'express'
 import Problem from '../models/problem.model'
 
+const escapeRegex = (text: string): string => {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
+}
+
 export const getPaginatedProblems = async (req: Request, res: Response) => {
   try {
     const page = parseInt(req.query.page as string) || 1
     const limit = parseInt(req.query.limit as string) || 20
+    const searchQuery = req.query.search
+    const difficultyFilter = req.query.difficulty
     const skip = (page - 1) * limit
 
+    const query: any = {}
+
+    if (searchQuery && typeof searchQuery === 'string') {
+      const fuzzy = searchQuery
+        .split('')
+        .map((c) => escapeRegex(c))
+        .join('.*')
+      query.title = { $regex: fuzzy, $options: 'i' }
+    }
+
+    if (difficultyFilter && difficultyFilter !== 'All') {
+      query.difficulty = difficultyFilter
+    }
+
     const [problems, totalproblems] = await Promise.all([
-      Problem.find().skip(skip).limit(limit),
-      Problem.countDocuments(),
+      Problem.find(query).skip(skip).limit(limit),
+      Problem.countDocuments(query),
     ])
 
     res.status(200).json({

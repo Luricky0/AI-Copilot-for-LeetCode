@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import Editor from '@monaco-editor/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  faBook,
   faBookOpen,
   faCheck,
   faLightbulb,
