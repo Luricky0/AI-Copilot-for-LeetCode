@@ -69,7 +69,7 @@ const ProblemDisplay = ({problem}:{problem:Problem}) => {
       </div>
       {problem ? (
         <div
-          className="problemContent overflow-scroll"
+          className="problemContent overflow-scroll overflow-x-hidden"
           dangerouslySetInnerHTML={{ __html: problem.content }}
         />
       ) : (

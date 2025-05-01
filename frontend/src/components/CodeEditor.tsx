@@ -10,6 +10,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { Problem } from '../api/problemApi'
 import { completeProblem, getCompletedProblems } from '../api/userApi'
+import { getEvaluation } from '../api/aiAPi'
+import ReactMarkdown from 'react-markdown'
+
 const CodeLangMap: Record<number, string> = {
   0: 'cpp',
   1: 'java',
@@ -37,6 +40,7 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
   const [showHint, setShowHint] = useState(false)
   const [onAIState, setOnAIState] = useState(false)
   const [isAILoading, setIsAILoading] = useState(false)
+  const [evaluation, setEvaluation] = useState('')
   const [completedProblemsIDs, setCompletedProblemsIDs] = useState([''])
 
   const load = async () => {
@@ -59,6 +63,8 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
   const onAI = async () => {
     setOnAIState(true)
     setIsAILoading(true)
+    const res = await getEvaluation(problem.title, code)
+    setEvaluation(res?.data?.message)
     setIsAILoading(false)
   }
 
@@ -68,7 +74,7 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
 
   useEffect(() => {
     load()
-  })
+  }, [])
 
   return (
     <div className="h-screen rounded-lg px-4 border-2 bg-white h-scrren">
@@ -147,7 +153,13 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
             theme="vs-light"
           />
         </div>
-        <div className="rounded bg-white-dark m-1"></div>
+        <div
+          className="rounded bg-white-dark p-2 overflow-scroll overflow-x-hidden overflow-y-auto
+ max-h-[50vh]">
+          <ReactMarkdown>
+            {isAILoading ? 'Loading...' : evaluation}
+          </ReactMarkdown>
+        </div>
       </div>
     </div>
   )
