@@ -5,6 +5,7 @@ import { ProtectedRoute } from './ProtectedRoute'
 import ProblemList from '../components/ProblemList'
 import ProblemDisplay from '../components/ProblemDisplay'
 import ProblemPage from '../pages/ProblePage'
+import MainPage from '../pages/MainPage'
 
 export const routes: RouteObject[] = [
   {
@@ -15,7 +16,7 @@ export const routes: RouteObject[] = [
     path: '/',
     element: (
       <ProtectedRoute>
-        <ProblemList />
+        <MainPage />
       </ProtectedRoute>
     ),
   },

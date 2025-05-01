@@ -11,15 +11,19 @@ import {
 } from '../api/userApi'
 import { useNavigate } from 'react-router-dom'
 
-const ProblemList = () => {
+const ProblemList = ({
+  likedProblemsIDs,
+  setLikedProblemsIDs,
+  completedProblemsIDs,
+  setCompletedProblemsIDs,
+}:any) => {
   const [problems, setproblems] = useState<Problem[]>([])
   const [totalPages, setTotalPages] = useState(0)
   const [page, setPage] = useState(1)
   const [searchQuery, setSearchQuery] = useState('')
   const [difficultyFilter, setDifficultyFilter] = useState('All')
   const [loading, setLoading] = useState(true)
-  const [likedProblemsIDs, setLikedProblemsIDs] = useState([''])
-  const [completedProblemsIDs, setCompletedProblemsIDs] = useState([''])
+
   const debounceTimeout = useRef<any>(null)
   const navigate = useNavigate()
 
@@ -89,10 +93,7 @@ const ProblemList = () => {
 
   return (
     <div>
-      <h1 className="flex items-center justify-center font-menlo text-4xl py-4">
-        Codepilot
-      </h1>
-      <div className="rounded-lg mx-4 px-4 py-5 border-2 bg-white">
+      <div className="rounded-lg px-4 py-5 border-2 bg-white">
         <div className="flex items-center gap-3">
           <h2 className="text-xl font-bold">Problems</h2>
           <input

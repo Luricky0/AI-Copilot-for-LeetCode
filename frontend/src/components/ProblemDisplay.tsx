@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Example } from '../type'
 import { Problem } from '../api/problemApi'
 import '../styles/ProblemDisplay.scss'
@@ -41,22 +41,27 @@ const ConstraintsDisplay = ({ constraints }: { constraints: string[] }) => {
     </div>
   )
 }
-const ProblemDisplay = ({problem}:{problem:Problem}) => {
-  // const location = useLocation()
-  // const [problem, setProblem] = useState<Problem | null>(null)
-  // useEffect(() => {
-  //   setProblem(location.state.problem)
-  // })
+
+const ProblemDisplay = ({ problem }: { problem: Problem }) => {
+  const navigate = useNavigate()
   return (
     <div className="h-screen rounded-lg px-4 py-5 border-2 bg-white flex flex-col gap-4">
-      <h1 className="text-2xl bold font-bold">
-        {problem?.problemId}. {problem?.title}
-      </h1>
+      <div className="flex items-center">
+        <img
+          src="/logo.png"
+          className="w-8 h-8"
+          onClick={() => {
+            navigate('/')
+          }}
+          alt="Main Page"
+        />
+        <h1 className="text-2xl bold font-bold mx-2">
+          {problem?.problemId}. {problem?.title}
+        </h1>
+      </div>
       <div
         className={`${
-          problem?.difficulty === 'Medium'
-            ? 'w-16'
-            : 'w-12'
+          problem?.difficulty === 'Medium' ? 'w-16' : 'w-12'
         } h-8 flex items-center justify-center font-semibold px-2 py-1 rounded text-white
     ${
       problem?.difficulty === 'Easy'
