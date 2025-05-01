@@ -35,16 +35,22 @@ const ProblemList = () => {
           searchQuery,
           difficultyFilter
         )
+
+        if (page > data.totalPages && data.totalPages > 0) {
+          setPage(data.totalPages)
+          return
+        }
+
         setLikedProblemsIDs(await getLikedProblems())
         setCompletedProblemsIDs(await getCompletedProblems())
-        setproblems(data.problems)
         setTotalPages(data.totalPages)
+        setproblems(data.problems)
       } catch (err) {
         console.error('Error fetching problems:', err)
       } finally {
         setLoading(false)
       }
-    }, 500)
+    }, 100)
   }
 
   const onLike = async (problemId: string) => {
@@ -71,7 +77,11 @@ const ProblemList = () => {
 
   useEffect(() => {
     load()
-  }, [page, difficultyFilter])
+  }, [page])
+
+  useEffect(() => {
+    load()
+  }, [difficultyFilter])
 
   if (loading) {
     return <div className="p-4">Loading...</div>
@@ -113,11 +123,11 @@ const ProblemList = () => {
           <div>Difficulty</div>
           <div>Actions</div> {/* New Actions column */}
         </div>
-        {problems.map((q) => (
+        {problems.map((q, index) => (
           <div
             key={q.problemId}
             className={`p-2 grid grid-cols-[8fr_1fr_1fr] gap-4 items-center 
-            ${Number(q.problemId) % 2 === 0 ? 'bg-white-dark' : 'bg-white'}`}>
+            ${index % 2 === 0 ? 'bg-white-dark' : 'bg-white'}`}>
             <a
               target="_blank"
               rel="noopener noreferrer"
@@ -174,7 +184,8 @@ const ProblemList = () => {
           </span>
           <button
             onClick={() => setPage(page + 1)}
-            className="px-4 py-2 bg-black-08 rounded">
+            disabled={page === totalPages}
+            className="px-4 py-2 bg-black-08 rounded disabled:opacity-50">
             Next
           </button>
         </div>

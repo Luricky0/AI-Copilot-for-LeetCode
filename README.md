@@ -17,10 +17,10 @@ This full-stack app helps users efficiently manage their practice, record soluti
 
 ## 🧰 Tech Stack
 
-| Layer     | Technology        |
-|-----------|-------------------|
-| Frontend  | Next.js + React + Tailwind CSS |
-| Backend   | Express (Node.js)  |
-| Database  | MongoDB |
-| AI API    | Groq |
-| Auth      | NextAuth.js|
+| Layer    | Technology                     |
+| -------- | ------------------------------ |
+| Frontend | Next.js + React + Tailwind CSS |
+| Backend  | Express (Node.js)              |
+| Database | MongoDB                        |
+| AI API   | Gemini                         |
+| Auth     | JWT                            |
