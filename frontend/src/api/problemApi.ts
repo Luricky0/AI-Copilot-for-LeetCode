@@ -5,6 +5,12 @@ interface TopicTag {
   slug: string
 }
 
+export interface ProblemRecord {
+  problemId: string
+  timestamp: number
+  title: string
+}
+
 export interface Problem extends Document {
   _id: string
   problemId: string
@@ -51,5 +57,15 @@ export const fetchProblems = async (
     problems,
     totalPages: data.totalPages,
     totalproblems: data.totalproblems,
+  }
+}
+
+export const getProblem = async (problemId: string) => {
+  try {
+    const res = await axiosInstance.get(`/problem?problemId=${problemId}`)
+    const { problem } = res.data
+    return problem
+  } catch (error) {
+    console.log(error)
   }
 }

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import Problem from '../models/problem.model'
+import { ObjectId } from 'mongodb'
 
 const escapeRegex = (text: string): string => {
   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
@@ -40,5 +41,26 @@ export const getPaginatedProblems = async (req: Request, res: Response) => {
     })
   } catch (error) {
     res.status(500).json({ message: 'Failed', error })
+  }
+}
+
+export const getProblem = async (req: Request, res: Response) => {
+  const { problemId } = req.query
+  try {
+    const problem = await Problem.findById(problemId)
+    if (problem) {
+      res.status(200).json({
+        problem,
+      })
+    } else {
+      res.status(404).json({
+        message: 'No such problem',
+      })
+    }
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({
+      message: 'Sever error',
+    })
   }
 }

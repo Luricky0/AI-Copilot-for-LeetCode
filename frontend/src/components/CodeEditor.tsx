@@ -4,10 +4,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faBookOpen,
   faCheck,
+  faCircleCheck,
   faLightbulb,
   faRobot,
 } from '@fortawesome/free-solid-svg-icons'
-import { Problem } from '../api/problemApi'
+import { Problem, ProblemRecord } from '../api/problemApi'
 import { completeProblem, getCompletedProblems } from '../api/userApi'
 import { getEvaluation } from '../api/aiAPi'
 import ReactMarkdown from 'react-markdown'
@@ -40,7 +41,7 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
   const [onAIState, setOnAIState] = useState(false)
   const [isAILoading, setIsAILoading] = useState(false)
   const [evaluation, setEvaluation] = useState('')
-  const [completedProblemsIDs, setCompletedProblemsIDs] = useState([''])
+  const [completedProblemsIDs, setCompletedProblemsIDs] = useState<ProblemRecord[]>([])
 
   const load = async () => {
     try {
@@ -50,9 +51,9 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
     }
   }
 
-  const onComplete = async (problemId: string) => {
+  const onComplete = async () => {
     try {
-      await completeProblem(problemId)
+      await completeProblem(problem._id, problem.title)
       load()
     } catch (error) {
       console.log(error)
@@ -108,14 +109,14 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
 
           <div className="flex flex-row-reverse gap-3 px-2">
             <FontAwesomeIcon
-              icon={faCheck}
+              icon={faCircleCheck}
               size="2x"
               style={
-                completedProblemsIDs.includes(problem._id)
+                completedProblemsIDs.some(p=>p.problemId===problem._id)
                   ? { color: 'green' }
                   : {}
               }
-              onClick={() => onComplete(problem._id)}
+              onClick={() => onComplete()}
               title="Mark as completed"
             />
             <FontAwesomeIcon

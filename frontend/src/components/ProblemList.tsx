@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { fetchProblems, Problem } from '../api/problemApi'
 import 'font-awesome/css/font-awesome.min.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faCircleCheck } from '@fortawesome/free-solid-svg-icons'
 import {
   completeProblem,
   getCompletedProblems,
@@ -16,7 +16,7 @@ const ProblemList = ({
   setLikedProblemsIDs,
   completedProblemsIDs,
   setCompletedProblemsIDs,
-}:any) => {
+}: any) => {
   const [problems, setproblems] = useState<Problem[]>([])
   const [totalPages, setTotalPages] = useState(0)
   const [page, setPage] = useState(1)
@@ -57,18 +57,18 @@ const ProblemList = ({
     }, 100)
   }
 
-  const onLike = async (problemId: string) => {
+  const onLike = async (problemId: string, title: string) => {
     try {
-      await likeProblem(problemId)
+      await likeProblem(problemId, title)
       load()
     } catch (error) {
       console.log(error)
     }
   }
 
-  const onComplete = async (problemId: string) => {
+  const onComplete = async (problemId: string, title: string) => {
     try {
-      await completeProblem(problemId)
+      await completeProblem(problemId, title)
       load()
     } catch (error) {
       console.log(error)
@@ -147,32 +147,38 @@ const ProblemList = ({
               {q.difficulty}
             </div>
             <div className="grid grid-cols-[1fr_1fr] items-center ">
-              {likedProblemsIDs?.includes(q._id) ? (
+              {likedProblemsIDs?.some(
+                (item: { problemId: string }) => item.problemId === q._id
+              ) ? (
                 <i
                   className="fa fa-heart text-red-500 fa-2x"
-                  onClick={() => onLike(q._id)}></i>
+                  onClick={() => onLike(q._id, q.title)}></i>
               ) : (
                 <i
                   className="fa fa-heart-o text-red-500 fa-2x"
-                  onClick={() => onLike(q._id)}></i>
+                  onClick={() => onLike(q._id, q.title)}></i>
               )}
 
-              {completedProblemsIDs?.includes(q._id) ? (
+              {completedProblemsIDs?.some(
+                (item: { problemId: string }) => item.problemId === q._id
+              ) ? (
                 <FontAwesomeIcon
-                  icon={faCheck}
+                  icon={faCircleCheck}
                   style={{ color: 'green', fontSize: '2rem' }}
-                  onClick={() => onComplete(q._id)}
+                  onClick={() => onComplete(q._id, q.title)}
                 />
               ) : (
                 <FontAwesomeIcon
-                  icon={faCheck}
+                  icon={faCircleCheck}
                   style={{ color: '#dddddd', fontSize: '2rem' }}
-                  onClick={() => onComplete(q._id)}
+                  onClick={() => onComplete(q._id, q.title)}
                 />
               )}
             </div>
           </div>
         ))}
+
+        {/* Page Chooser */}
         <div className="flex justify-center items-center gap-4 mt-4">
           <button
             disabled={page === 1}

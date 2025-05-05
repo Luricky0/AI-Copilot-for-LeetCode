@@ -1,10 +1,13 @@
 import React, { useState } from 'react'
 import ProblemList from '../components/ProblemList'
 import UserCard from '../components/UserCard'
+import { ProblemRecord } from '../api/problemApi'
 
 const MainPage = () => {
-  const [likedProblemsIDs, setLikedProblemsIDs] = useState([])
-  const [completedProblemsIDs, setCompletedProblemsIDs] = useState([])
+  const [likedProblemsIDs, setLikedProblemsIDs] = useState<ProblemRecord[]>([])
+  const [completedProblemsIDs, setCompletedProblemsIDs] = useState<
+    ProblemRecord[]
+  >([])
   return (
     <>
       <h1 className="flex items-center font-menlo text-4xl py-4">

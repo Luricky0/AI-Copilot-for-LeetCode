@@ -9,9 +9,9 @@ export const getLikedProblems = async () => {
   }
 }
 
-export const likeProblem = async (problemId: string) => {
+export const likeProblem = async (problemId: string, title: string) => {
   try {
-    const res = await axiosInstance.post('/like', { problemId })
+    const res = await axiosInstance.post('/like', { problemId, title })
     return res.data.likedProblemsIDs
   } catch (error) {
     console.log(error)
@@ -27,9 +27,9 @@ export const getCompletedProblems = async () => {
   }
 }
 
-export const completeProblem = async (problemId: string) => {
+export const completeProblem = async (problemId: string, title: string) => {
   try {
-    const res = await axiosInstance.post('/complete', { problemId })
+    const res = await axiosInstance.post('/complete', { problemId, title })
     return res.data.completedProblemsIDs
   } catch (error) {
     console.log(error)
