@@ -71,9 +71,13 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
   }
 
   const onAIAnswer = async () => {
-    console.log('Answering')
+    console.log('Answering', CodeLangMap[lang])
     setIsAILoading(true)
-    const res = await getAnswer(problem.title, problem.content)
+    const res = await getAnswer(
+      problem.title,
+      problem.content,
+      CodeLangMap[lang]
+    )
     setEvaluation(res?.data?.message)
     setIsAILoading(false)
   }

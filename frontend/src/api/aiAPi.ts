@@ -9,9 +9,9 @@ export const getEvaluation = (title: string, code: string) => {
   }
 }
 
-export const getAnswer = (title: string, content: string) => {
+export const getAnswer = (title: string, content: string, lang: string) => {
   try {
-    const res = axiosInstance.post('/answer', { title, content })
+    const res = axiosInstance.post('/answer', { title, content, lang })
     return res
   } catch (error) {
     console.log(error)

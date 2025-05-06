@@ -16,6 +16,7 @@
     "global-agent": "^3.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.13.2",
+    "openai": "^4.97.0",
     "undici": "^6.21.2"
   },
   "devDependencies": {

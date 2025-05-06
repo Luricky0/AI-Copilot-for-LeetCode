@@ -7,7 +7,6 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
 const geminiModel = ai.models
 
 const evaluateCodeWithGemini = async (title: string, code: string) => {
-  console.log('Gemini key:', process.env.GEMINI_API_KEY)
   const prompt = `
   You are a LeetCode code review assistant. Please analyze the user's submission in the following structured format:
   1. Code score (out of 10), with a brief justification (no more than 20 words);

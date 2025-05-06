@@ -1,9 +1,10 @@
 import { Request, Response } from 'express'
-import gemini from '../models/ai.model'
+import gemini from '../models/gemini.model'
+import deepseek from '../models/deepseek.model'
 export const evaluateCode = async (req: Request, res: Response) => {
   const { title, code } = req.body
   try {
-    const aiRes = await gemini.evaluateCodeWithGemini(title, code)
+    const aiRes = await deepseek.evaluateCodeWithDeepseek(title, code)
     res.status(200).json({
       message: aiRes,
     })
@@ -14,9 +15,9 @@ export const evaluateCode = async (req: Request, res: Response) => {
 }
 
 export const getAnswer = async (req: Request, res: Response) => {
-  const { title, content } = req.body
+  const { title, content, lang } = req.body
   try {
-    const aiRes = await gemini.getAnswerByGemini(title, content)
+    const aiRes = await deepseek.getAnswerByDeepseek(title, content, lang)
     res.status(200).json({
       message: aiRes,
     })

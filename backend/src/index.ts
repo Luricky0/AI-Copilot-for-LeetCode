@@ -1,14 +1,13 @@
 // src/index.ts
 import express from 'express'
-import dotenv from 'dotenv'
 import connectDB from './config/db'
 import problemRoutes from './routes/problem.routes'
 import userRoutes from './routes/user.routes'
 import aiRoutes from './routes/ai.routes'
 import cors from 'cors'
+import dotenv from 'dotenv'
 dotenv.config()
 const { setGlobalDispatcher, ProxyAgent } = require('undici')
-
 const dispatcher = new ProxyAgent({
   uri: new URL('http://127.0.0.1:7890').toString(),
 })
