@@ -22,5 +22,5 @@ This full-stack app helps users efficiently manage their practice, record soluti
 | Frontend | Next.js + React + Tailwind CSS |
 | Backend  | Express (Node.js)              |
 | Database | MongoDB                        |
-| AI API   | Gemini                         |
+| AI API   | Gemini / Deepseek              |
 | Auth     | JWT                            |
