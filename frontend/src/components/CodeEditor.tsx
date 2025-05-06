@@ -10,7 +10,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { Problem, ProblemRecord } from '../api/problemApi'
 import { completeProblem, getCompletedProblems } from '../api/userApi'
-import { getEvaluation } from '../api/aiAPi'
+import { getAnswer, getEvaluation } from '../api/aiAPi'
 import ReactMarkdown from 'react-markdown'
 
 const CodeLangMap: Record<number, string> = {
@@ -41,7 +41,9 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
   const [onAIState, setOnAIState] = useState(false)
   const [isAILoading, setIsAILoading] = useState(false)
   const [evaluation, setEvaluation] = useState('')
-  const [completedProblemsIDs, setCompletedProblemsIDs] = useState<ProblemRecord[]>([])
+  const [completedProblemsIDs, setCompletedProblemsIDs] = useState<
+    ProblemRecord[]
+  >([])
 
   const load = async () => {
     try {
@@ -64,6 +66,14 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
     setOnAIState(true)
     setIsAILoading(true)
     const res = await getEvaluation(problem.title, code)
+    setEvaluation(res?.data?.message)
+    setIsAILoading(false)
+  }
+
+  const onAIAnswer = async () => {
+    console.log('Answering')
+    setIsAILoading(true)
+    const res = await getAnswer(problem.title, problem.content)
     setEvaluation(res?.data?.message)
     setIsAILoading(false)
   }
@@ -112,7 +122,7 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
               icon={faCircleCheck}
               size="2x"
               style={
-                completedProblemsIDs.some(p=>p.problemId===problem._id)
+                completedProblemsIDs.some((p) => p.problemId === problem._id)
                   ? { color: 'green' }
                   : {}
               }
@@ -123,6 +133,11 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
               icon={faBookOpen}
               size="2x"
               title="Show the answer"
+              onClick={() => {
+                if (!isAILoading) {
+                  onAIAnswer()
+                }
+              }}
             />
             <FontAwesomeIcon
               icon={faRobot}

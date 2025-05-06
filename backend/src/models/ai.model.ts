@@ -28,14 +28,41 @@ const evaluateCodeWithGemini = async (title: string, code: string) => {
     } catch (err: any) {
       if (err.status === 503 && retries > 0) {
         console.warn('Gemini overloaded. Retrying...')
-        await new Promise((res) => setTimeout(res, 1000)) // 等 1 秒再试
+        await new Promise((res) => setTimeout(res, 1000))
         continue
       }
       throw err
     }
   }
 }
+
+const getAnswerByGemini = async (title:string,content:string) => {
+  const prompt=`Could you tell me the answer of this leetcode question? 
+    The details are as follows(Ignore the html marks)
+    Title: ${title}
+    Content: ${content}
+    `
+    let retries = 3
+    while(retries--){
+      try {
+        const response = await geminiModel.generateContent({
+          model: 'gemini-2.0-flash',
+          contents: prompt,
+        })
+        return await response.text
+      } catch (err: any) {
+        if (err.status === 503 && retries > 0) {
+          console.warn('Gemini overloaded. Retrying...')
+          await new Promise((res) => setTimeout(res, 1000))
+          continue
+        }
+        throw err
+      }
+    }
+}
+
 const gemini = {
   evaluateCodeWithGemini,
+  getAnswerByGemini
 }
 export default gemini
