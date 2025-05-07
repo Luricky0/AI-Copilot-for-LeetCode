@@ -39,6 +39,7 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
   const [code, setCode] = useState(codeSnippets[lang]?.code || '')
   const [showHint, setShowHint] = useState(false)
   const [onAIState, setOnAIState] = useState(false)
+  const [onGettingAnswerState, setOnGeetingAnswerState] = useState(false)
   const [isAILoading, setIsAILoading] = useState(false)
   const [evaluation, setEvaluation] = useState('')
   const [completedProblemsIDs, setCompletedProblemsIDs] = useState<
@@ -63,23 +64,29 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
   }
 
   const onAI = async () => {
-    setOnAIState(true)
-    setIsAILoading(true)
-    const res = await getEvaluation(problem.title, code)
-    setEvaluation(res?.data?.message)
-    setIsAILoading(false)
+    if (!isAILoading) {
+      setIsAILoading(true)
+      setOnAIState(true)
+      setOnGeetingAnswerState(false)
+      const res = await getEvaluation(problem.title, code)
+      setEvaluation(res?.data?.message)
+      setIsAILoading(false)
+    }
   }
 
   const onAIAnswer = async () => {
-    console.log('Answering', CodeLangMap[lang])
-    setIsAILoading(true)
-    const res = await getAnswer(
-      problem.title,
-      problem.content,
-      CodeLangMap[lang]
-    )
-    setEvaluation(res?.data?.message)
-    setIsAILoading(false)
+    if (!isAILoading) {
+      setIsAILoading(true)
+      setOnGeetingAnswerState(true)
+      setOnAIState(false)
+      const res = await getAnswer(
+        problem.title,
+        problem.content,
+        CodeLangMap[lang]
+      )
+      setEvaluation(res?.data?.message)
+      setIsAILoading(false)
+    }
   }
 
   useEffect(() => {
@@ -138,19 +145,16 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
               size="2x"
               title="Show the answer"
               onClick={() => {
-                if (!isAILoading) {
-                  onAIAnswer()
-                }
+                onAIAnswer()
               }}
+              style={onGettingAnswerState ? { color: 'orange' } : {}}
             />
             <FontAwesomeIcon
               icon={faRobot}
               size="2x"
               title="AI review"
               onClick={() => {
-                if (!isAILoading) {
-                  onAI()
-                }
+                onAI()
               }}
               style={onAIState ? { color: 'purple' } : {}}
             />
