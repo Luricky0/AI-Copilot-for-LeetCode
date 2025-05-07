@@ -64,3 +64,27 @@ export const getProblem = async (req: Request, res: Response) => {
     })
   }
 }
+
+export const getNextProblemID = async (req: Request, res: Response) => {
+  const { problemId } = req.body
+  const currentID = parseInt(problemId, 10)
+  if (isNaN(currentID)) {
+    res.status(400).json({ message: 'Invalid problemID format.' })
+  }
+  const nextProblemID = currentID + 1
+
+  try {
+    const nextProblem = await Problem.findOne({
+      problemId: nextProblemID.toString(),
+    })
+
+    if (!nextProblem) {
+      res.status(404).json({ message: 'No next problem found.' })
+    } else {
+      res.status(200).json({ nextProblemID: nextProblem._id })
+    }
+  } catch (error) {
+    console.error('Error fetching next problem:', error)
+    res.status(500).json({ message: 'Internal server error.' })
+  }
+}

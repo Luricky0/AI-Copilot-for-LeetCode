@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Example } from '../type'
-import { Problem } from '../api/problemApi'
+import { getNextProblem, Problem } from '../api/problemApi'
 import '../styles/ProblemDisplay.scss'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 
 const ExamplesDisplay = ({ examples }: { examples: Example[] }) => {
   return (
@@ -44,6 +46,14 @@ const ConstraintsDisplay = ({ constraints }: { constraints: string[] }) => {
 
 const ProblemDisplay = ({ problem }: { problem: Problem }) => {
   const navigate = useNavigate()
+  const onNext = async () => {
+    try {
+      const nextProblemId = await getNextProblem(problem.problemId)
+      navigate(`/detail/${nextProblemId}`)
+    } catch (error) {
+      console.log(error)
+    }
+  }
   return (
     <div className="h-screen rounded-lg px-4 py-5 border-2 bg-white flex flex-col gap-4">
       <div className="flex items-center">
@@ -58,6 +68,12 @@ const ProblemDisplay = ({ problem }: { problem: Problem }) => {
         <h1 className="text-2xl bold font-bold mx-2">
           {problem?.problemId}. {problem?.title}
         </h1>
+        <FontAwesomeIcon
+          icon={faArrowRight}
+          onClick={() => onNext()}
+          size="2x"
+          className="ml-auto cursor-pointer"
+        />
       </div>
       <div
         className={`${

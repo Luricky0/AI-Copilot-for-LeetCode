@@ -11,7 +11,7 @@ export default function ProblemPage() {
   }
   useEffect(() => {
     load()
-  }, [])
+  }, [problemId])
   return (
     <div className="h-screen w-screen grid grid-cols-[1fr_1fr]">
       {problem ? <ProblemDisplay problem={problem} /> : <></>}

@@ -69,3 +69,13 @@ export const getProblem = async (problemId: string) => {
     console.log(error)
   }
 }
+
+export const getNextProblem = async (problemId: string) => {
+  try {
+    const res = await axiosInstance.post('/next', { problemId })
+    const { nextProblemID } = res.data
+    return nextProblemID
+  } catch (error) {
+    console.log(error)
+  }
+}
