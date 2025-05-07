@@ -139,6 +139,7 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
               }
               onClick={() => onComplete()}
               title="Mark as completed"
+              className='cursor-pointer'
             />
             <FontAwesomeIcon
               icon={faBookOpen}
@@ -148,6 +149,7 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
                 onAIAnswer()
               }}
               style={onGettingAnswerState ? { color: 'orange' } : {}}
+              className='cursor-pointer'
             />
             <FontAwesomeIcon
               icon={faRobot}
@@ -157,6 +159,7 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
                 onAI()
               }}
               style={onAIState ? { color: 'purple' } : {}}
+              className='cursor-pointer'
             />
             <FontAwesomeIcon
               icon={faLightbulb}
@@ -164,6 +167,7 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
               onClick={() => setShowHint(!showHint)}
               style={showHint ? { color: 'orange' } : {}}
               title="Show the hints"
+              className='cursor-pointer'
             />
           </div>
         </div>

@@ -59,7 +59,7 @@ const ProblemDisplay = ({ problem }: { problem: Problem }) => {
       <div className="flex items-center">
         <img
           src="/logo.png"
-          className="w-8 h-8"
+          className="w-8 h-8 cursor-pointer"
           onClick={() => {
             navigate('/')
           }}

@@ -1,11 +1,22 @@
 import React from 'react'
 import { useUserContext } from '../contexts/userContext'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faCircleCheck, faHeart } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCheck,
+  faCircleCheck,
+  faHeart,
+  faRightFromBracket,
+} from '@fortawesome/free-solid-svg-icons'
 import RecentsListView from './RecentsListView'
+import { useNavigate } from 'react-router'
 
 const UserCard = ({ likedProblemsIDs, completedProblemsIDs }: any) => {
   const user = useUserContext()
+  const navigate = useNavigate()
+  const onLogout = () => {
+    user.removeToken()
+    navigate('/')
+  }
   return (
     <div>
       <div className="flex flex-col justify-center items-center gap-2 rounded-lg  bg-white border-2">
@@ -57,6 +68,13 @@ const UserCard = ({ likedProblemsIDs, completedProblemsIDs }: any) => {
           </h3>
           <RecentsListView problemList={completedProblemsIDs} />
         </div>
+
+        <FontAwesomeIcon
+          icon={faRightFromBracket}
+          size="2x"
+          className="mb-2 cursor-pointer"
+          onClick={() => onLogout()}
+        />
       </div>
     </div>
   )

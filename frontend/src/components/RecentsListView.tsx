@@ -14,7 +14,7 @@ const RecentsListView = ({ problemList }: { problemList: ProblemRecord[] }) => {
             className={`w-full grid grid-cols-[3fr_1fr] items-ceneter gap-2 p-1
             ${index % 2 === 0 ? 'bg-white-dark' : 'bg-white'}`}>
             <div
-              className="whitespace-nowrap overflow-hidden text-ellipsis"
+              className="whitespace-nowrap overflow-hidden text-ellipsis cursor-pointer"
               onClick={() => {
                 navigate(`/detail/${p.problemId}`)
               }}>

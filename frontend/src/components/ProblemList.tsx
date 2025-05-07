@@ -132,7 +132,8 @@ const ProblemList = ({
             <a
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => onClick(q)}>
+              onClick={() => onClick(q)}
+              className="cursor-pointer">
               {q.problemId}. {q.title}
             </a>
             <div
