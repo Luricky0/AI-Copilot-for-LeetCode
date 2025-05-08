@@ -22,6 +22,8 @@ const ProblemList = ({
   const [page, setPage] = useState(1)
   const [searchQuery, setSearchQuery] = useState('')
   const [difficultyFilter, setDifficultyFilter] = useState('All')
+  const [likedOnly, setLikedOnly] = useState(false)
+  const [completedOnly, setCompletedOnly] = useState(false)
   const [loading, setLoading] = useState(true)
 
   const debounceTimeout = useRef<any>(null)
@@ -35,9 +37,11 @@ const ProblemList = ({
       try {
         const data = await fetchProblems(
           page,
-          30,
+          20,
           searchQuery,
-          difficultyFilter
+          difficultyFilter,
+          likedOnly.toString(),
+          completedOnly.toString()
         )
 
         if (page > data.totalPages && data.totalPages > 0) {
@@ -87,6 +91,13 @@ const ProblemList = ({
     load()
   }, [difficultyFilter])
 
+  useEffect(() => {
+    load()
+  }, [likedOnly])
+
+  useEffect(() => {
+    load()
+  }, [completedOnly])
   if (loading) {
     return <div className="p-4">Loading...</div>
   }
@@ -117,6 +128,26 @@ const ProblemList = ({
             <option value="Medium">Medium</option>
             <option value="Hard">Hard</option>
           </select>
+
+          <i
+            className={`fa fa-heart
+             text-red-500 fa-2x cursor-pointer`}
+            style={likedOnly ? { color: 'red' } : { color: '#dddddd' }}
+            onClick={() => {
+              setCompletedOnly(false)
+              setLikedOnly(!likedOnly)
+            }}></i>
+
+          <FontAwesomeIcon
+            icon={faCircleCheck}
+            style={completedOnly ? { color: 'green' } : { color: '#dddddd' }}
+            className="cursor-pointer"
+            size="2x"
+            onClick={() => {
+              setCompletedOnly(!completedOnly)
+              setLikedOnly(false)
+            }}
+          />
         </div>
 
         <div className="p-3 grid grid-cols-[8fr_1fr_1fr] gap-4 border-b border-black-08 text-black-55">
@@ -156,7 +187,8 @@ const ProblemList = ({
                   onClick={() => onLike(q._id, q.title)}></i>
               ) : (
                 <i
-                  className="fa fa-heart-o text-red-500 fa-2x"
+                  className="fa fa-heart fa-2x"
+                  style={{ color: '#dddddd' }}
                   onClick={() => onLike(q._id, q.title)}></i>
               )}
 

@@ -1,6 +1,8 @@
 import { Request, Response } from 'express'
 import Problem from '../models/problem.model'
 import { ObjectId } from 'mongodb'
+import jwt from 'jsonwebtoken'
+import User from '../models/user.model'
 
 const escapeRegex = (text: string): string => {
   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
@@ -10,9 +12,11 @@ export const getPaginatedProblems = async (req: Request, res: Response) => {
   try {
     const page = parseInt(req.query.page as string) || 1
     const limit = parseInt(req.query.limit as string) || 20
+    const skip = (page - 1) * limit
     const searchQuery = req.query.search
     const difficultyFilter = req.query.difficulty
-    const skip = (page - 1) * limit
+    const likedOnly = req.query.likedOnly === 'true'
+    const completedOnly = req.query.completedOnly === 'true'
 
     const query: any = {}
 
@@ -26,6 +30,34 @@ export const getPaginatedProblems = async (req: Request, res: Response) => {
 
     if (difficultyFilter && difficultyFilter !== 'All') {
       query.difficulty = difficultyFilter
+    }
+
+    if (likedOnly) {
+      const token = req.headers.authorization?.split(' ')[1]
+      if (token) {
+        const decoded: any = jwt.verify(token, process.env.JWT_SECRET!)
+        const userId = decoded.id
+        const user = await User.findOne({ id: userId })
+        const likedIds = user?.likedProblemsIDs.map((p) => p.problemId)
+        query._id = { $in: likedIds }
+      } else {
+        res.status(400).json({
+          message: 'Bad token',
+        })
+      }
+    }else if (completedOnly) {
+      const token = req.headers.authorization?.split(' ')[1]
+      if (token) {
+        const decoded: any = jwt.verify(token, process.env.JWT_SECRET!)
+        const userId = decoded.id
+        const user = await User.findOne({ id: userId })
+        const completedIds = user?.completedProblemsIDs.map((p) => p.problemId)
+        query._id = { $in: completedIds }
+      } else {
+        res.status(400).json({
+          message: 'Bad token',
+        })
+      }
     }
 
     const [problems, totalproblems] = await Promise.all([

@@ -36,7 +36,9 @@ export const fetchProblems = async (
   page = 1,
   limit = 20,
   searchQuery = '',
-  difficultyFilter = 'All'
+  difficultyFilter = 'All',
+  likedOnly = 'false',
+  completedOnly = 'false'
 ): Promise<{
   problems: Problem[]
   totalPages: number
@@ -48,6 +50,8 @@ export const fetchProblems = async (
       limit,
       search: searchQuery || undefined,
       difficulty: difficultyFilter !== 'All' ? difficultyFilter : undefined,
+      likedOnly,
+      completedOnly
     },
   })
   const data = res.data
