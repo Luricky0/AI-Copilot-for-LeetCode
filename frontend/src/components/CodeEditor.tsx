@@ -17,11 +17,20 @@ const CodeLangMap: Record<number, string> = {
   0: 'cpp',
   1: 'java',
   2: 'python',
-  3: 'python',
+  // 3: 'python',
   4: 'c',
   5: 'csharp',
   6: 'javascript',
   7: 'typescript',
+}
+const CodeLangShowMap: Record<string, string> = {
+  cpp: 'C++',
+  java: 'Java',
+  python: 'Python',
+  c: 'C',
+  csharp: 'C#',
+  javascript: 'JavaScript',
+  typescript: 'TypeScript',
 }
 const CodeLangNum: Record<string, number> = {
   'C++': 0,
@@ -113,7 +122,7 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
               className="border rounded px-2 py-1">
               {Object.entries(CodeLangMap).map(([key, value]) => (
                 <option key={key} value={key}>
-                  {value}
+                  {CodeLangShowMap[value]}
                 </option>
               ))}
             </select>
@@ -139,7 +148,7 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
               }
               onClick={() => onComplete()}
               title="Mark as completed"
-              className='cursor-pointer'
+              className="cursor-pointer"
             />
             <FontAwesomeIcon
               icon={faBookOpen}
@@ -149,7 +158,7 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
                 onAIAnswer()
               }}
               style={onGettingAnswerState ? { color: 'orange' } : {}}
-              className='cursor-pointer'
+              className="cursor-pointer"
             />
             <FontAwesomeIcon
               icon={faRobot}
@@ -159,7 +168,7 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
                 onAI()
               }}
               style={onAIState ? { color: 'purple' } : {}}
-              className='cursor-pointer'
+              className="cursor-pointer"
             />
             <FontAwesomeIcon
               icon={faLightbulb}
@@ -167,7 +176,7 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
               onClick={() => setShowHint(!showHint)}
               style={showHint ? { color: 'orange' } : {}}
               title="Show the hints"
-              className='cursor-pointer'
+              className="cursor-pointer"
             />
           </div>
         </div>
