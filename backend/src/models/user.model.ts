@@ -7,7 +7,10 @@ interface IProblemRecord {
   timestamp: Number
   title: String
 }
-
+interface IGoalRecord{
+  goal: String
+  timestamp: Number
+}
 interface Iuser extends Document {
   id: string
   password: string
@@ -15,6 +18,7 @@ interface Iuser extends Document {
   isModified(path: string): boolean
   likedProblemsIDs: IProblemRecord[]
   completedProblemsIDs: IProblemRecord[]
+  goals: IGoalRecord[]
 }
 
 const userSchema = new Schema({
@@ -46,6 +50,14 @@ const userSchema = new Schema({
       },
     ],
     default: [],
+  },
+  goals: {
+    type: [
+      {
+        goal: { type: String },
+        timestamp: { type: Number, default: Date.now },
+      },
+    ],
   },
 })
 

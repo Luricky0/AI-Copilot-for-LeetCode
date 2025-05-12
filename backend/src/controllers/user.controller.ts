@@ -218,3 +218,59 @@ export const getCompletedProblems = async (req: Request, res: Response) => {
     }
   }
 }
+
+export const getGoals = async (req: Request, res: Response) => {
+  const token = req.headers.authorization?.split(' ')[1]
+  if (!token) {
+    res.status(400).json({ message: 'Token is required' })
+  } else {
+    try {
+      const decoded: any = jwt.verify(token, process.env.JWT_SECRET!)
+      const userId = decoded.id
+      const user = await User.findOne({ id: userId })
+      if (!user) {
+        res.status(404).json({ message: 'User not found' })
+      } else {
+        res.status(200).json({
+          goals: user.goals,
+        })
+      }
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({ message: 'Server error' })
+    }
+  }
+}
+
+export const setGoal = async (req: Request, res: Response) => {
+  const { goal } = req.body
+  const token = req.headers.authorization?.split(' ')[1]
+  if (!token) {
+    res.status(400).json({ message: 'Token is required' })
+  } else {
+    try {
+      const decoded: any = jwt.verify(token, process.env.JWT_SECRET!)
+      const userId = decoded.id
+      const user = await User.findOne({ id: userId })
+      if (!user) {
+        res.status(404).json({ message: 'User not found' })
+      } else {
+        const currentTime = Date.now()
+        user.goals.push({
+          goal,
+          timestamp: currentTime,
+        })
+        if (user.goals.length > 100) {
+  user.goals = user.goals.slice(-100);
+}
+        await user.save()
+        res.status(200).json({
+          goals: user.goals,
+        })
+      }
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({ message: 'Server error' })
+    }
+  }
+}

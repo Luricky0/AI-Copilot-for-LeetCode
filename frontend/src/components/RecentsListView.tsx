@@ -6,7 +6,7 @@ const RecentsListView = ({ problemList }: { problemList: ProblemRecord[] }) => {
   const navigate = useNavigate()
   return (
     <div className="w-full gap-2">
-      {problemList
+      {problemList?problemList
         .slice(-5)
         .reverse()
         .map((p, index) => (
@@ -27,7 +27,7 @@ const RecentsListView = ({ problemList }: { problemList: ProblemRecord[] }) => {
               })}
             </div>
           </div>
-        ))}
+        )):<></>}
     </div>
   )
 }

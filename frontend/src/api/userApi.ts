@@ -35,3 +35,20 @@ export const completeProblem = async (problemId: string, title: string) => {
     console.log(error)
   }
 }
+
+export const getGoals = async () => {
+  try {
+    const res = await axiosInstance.get('/goals')
+    return res.data.goals
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const postGoal = async (goal:string) => {
+  try {
+    const res = await axiosInstance.post('/setgoal', { goal })
+    return res.data
+  } catch (error) {
+    console.log(error)
+  }
+}

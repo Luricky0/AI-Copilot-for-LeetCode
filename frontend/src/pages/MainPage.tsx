@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import ProblemList from '../components/ProblemList'
 import UserCard from '../components/UserCard'
 import { ProblemRecord } from '../api/problemApi'
+import GoalCard from '../components/GoalCard'
 
 const MainPage = () => {
   const [likedProblemsIDs, setLikedProblemsIDs] = useState<ProblemRecord[]>([])
@@ -21,10 +22,13 @@ const MainPage = () => {
           completedProblemsIDs={completedProblemsIDs}
           setCompletedProblemsIDs={setCompletedProblemsIDs}
         />
-        <UserCard
-          likedProblemsIDs={likedProblemsIDs}
-          completedProblemsIDs={completedProblemsIDs}
-        />
+        <div className='flex flex-col gap-2'>
+          <GoalCard />
+          <UserCard
+            likedProblemsIDs={likedProblemsIDs}
+            completedProblemsIDs={completedProblemsIDs}
+          />
+        </div>
       </div>
     </>
   )
