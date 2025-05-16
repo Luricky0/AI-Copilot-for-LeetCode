@@ -261,8 +261,8 @@ export const setGoal = async (req: Request, res: Response) => {
           timestamp: currentTime,
         })
         if (user.goals.length > 100) {
-  user.goals = user.goals.slice(-100);
-}
+          user.goals = user.goals.slice(-100)
+        }
         await user.save()
         res.status(200).json({
           goals: user.goals,
@@ -271,6 +271,47 @@ export const setGoal = async (req: Request, res: Response) => {
     } catch (err) {
       console.error(err)
       res.status(500).json({ message: 'Server error' })
+    }
+  }
+}
+
+export const getRecommendation = async (req: Request, res: Response) => {
+  const token = req.headers.authorization?.split(' ')[1]
+  if (!token) {
+    res.status(400).json({ message: 'Token is required' })
+  } else {
+    const decoded: any = jwt.verify(token, process.env.JWT_SECRET!)
+    const userId = decoded.id
+    const user = await User.findOne({ id: userId })
+    if (!user) {
+      res.status(404).json({ message: 'User not found' })
+    } else {
+      const goal = user.goals[user.goals.length - 1]?.goal
+      if (!goal) {
+        res.status(400).json({ message: 'No goal found for user' })
+        return
+      }
+
+      const goalKeywords = goal.toLowerCase().split(/\s+/)
+      const allProblems = await Problem.find({})
+
+      const recommendedProblem = allProblems.find((problem) => {
+        if (user.completedProblemsIDs.includes(problem.id)) return false
+
+        const title = problem.title.toLowerCase()
+        const tags = problem.topicTags.map(tag => tag.name.toLowerCase())
+
+        return goalKeywords.some(
+          (keyword) =>
+            title.includes(keyword) || tags.some((tag) => tag.includes(keyword))
+        )
+      })
+
+      if (recommendedProblem) {
+        res.status(200).json({ problem: recommendedProblem })
+      } else {
+        res.status(404).json({ message: 'No matching problem found' })
+      }
     }
   }
 }

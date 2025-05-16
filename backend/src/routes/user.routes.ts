@@ -1,5 +1,5 @@
 import express from 'express'
-import { completeProblem, getCompletedProblems, getGoals, getLikedProblems, likeProblem, login, register, setGoal } from '../controllers/user.controller'
+import { completeProblem, getCompletedProblems, getGoals, getLikedProblems, getRecommendation, likeProblem, login, register, setGoal } from '../controllers/user.controller'
 
 const router = express.Router()
 
@@ -11,5 +11,5 @@ router.post('/complete',completeProblem)
 router.get('/completed',getCompletedProblems)
 router.get('/goals',getGoals)
 router.post('/setgoal',setGoal)
-
+router.get('/recommendation',getRecommendation)
 export default router

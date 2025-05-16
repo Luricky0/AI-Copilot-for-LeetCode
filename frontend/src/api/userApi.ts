@@ -44,10 +44,18 @@ export const getGoals = async () => {
     console.log(error)
   }
 }
-export const postGoal = async (goal:string) => {
+export const postGoal = async (goal: string) => {
   try {
     const res = await axiosInstance.post('/setgoal', { goal })
     return res.data
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const getRecommendation = async () => {
+  try {
+    const res = await axiosInstance.get('/recommendation')
+    return res.data.problem
   } catch (error) {
     console.log(error)
   }

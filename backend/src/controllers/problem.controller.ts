@@ -45,7 +45,7 @@ export const getPaginatedProblems = async (req: Request, res: Response) => {
           message: 'Bad token',
         })
       }
-    }else if (completedOnly) {
+    } else if (completedOnly) {
       const token = req.headers.authorization?.split(' ')[1]
       if (token) {
         const decoded: any = jwt.verify(token, process.env.JWT_SECRET!)
