@@ -296,14 +296,16 @@ export const getRecommendation = async (req: Request, res: Response) => {
       const allProblems = await Problem.find({})
 
       const recommendedProblem = allProblems.find((problem) => {
-        if (user.completedProblemsIDs.includes(problem.id)) return false
+        if (
+          user.completedProblemsIDs.some((p) => {
+            return p.problemId.toString() == problem._id?.toString()
+          })
+        )
+          return false
 
-        const title = problem.title.toLowerCase()
-        const tags = problem.topicTags.map(tag => tag.name.toLowerCase())
-
-        return goalKeywords.some(
-          (keyword) =>
-            title.includes(keyword) || tags.some((tag) => tag.includes(keyword))
+        const tags = problem.topicTags.map((tag) => tag.name.toLowerCase())
+        return goalKeywords.some((keyword) =>
+          tags.some((tag) => tag.includes(keyword))
         )
       })
 
