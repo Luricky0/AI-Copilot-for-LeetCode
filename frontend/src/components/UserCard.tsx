@@ -9,6 +9,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import RecentsListView from './RecentsListView'
 import { useNavigate } from 'react-router'
+import CalendarHeatmap from 'react-calendar-heatmap'
+import 'react-calendar-heatmap/dist/styles.css'
 
 const UserCard = ({ likedProblemsIDs, completedProblemsIDs }: any) => {
   const user = useUserContext()
@@ -43,6 +45,21 @@ const UserCard = ({ likedProblemsIDs, completedProblemsIDs }: any) => {
             </p>
           </div>
         </div>
+        <div className="w-full h-28 p-2">
+          <CalendarHeatmap
+            startDate={new Date('2016-06-01')}
+            endDate={new Date('2016-12-31')}
+            values={[
+              { date: '2016-01-01', count: 12 },
+              { date: '2016-01-22', count: 122 },
+              { date: '2016-01-30', count: 38 },
+            ]}
+            classForValue={(value: { count: number }) =>
+              value ? `color-github-${Math.min(value.count, 4)}` : 'color-empty'
+            }
+          />
+        </div>
+
         <div className="w-full p-2">
           <h3 className="font-semibold text-xl">
             <FontAwesomeIcon
