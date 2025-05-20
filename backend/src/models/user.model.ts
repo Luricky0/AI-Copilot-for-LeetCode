@@ -2,16 +2,16 @@ import mongoose, { Schema, Document } from 'mongoose'
 import bcrypt from 'bcryptjs'
 import { ObjectId } from 'mongodb'
 
-interface IProblemRecord {
+export interface IProblemRecord {
   problemId: ObjectId
   timestamp: Number
   title: String
 }
-interface IGoalRecord{
+export interface IGoalRecord{
   goal: String
   timestamp: Number
 }
-interface Iuser extends Document {
+export interface Iuser extends Document {
   id: string
   password: string
   comparePassword(candidatePassword: string): Promise<boolean>
