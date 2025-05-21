@@ -17,3 +17,12 @@ export const getAnswer = (title: string, content: string, lang: string) => {
     console.log(error)
   }
 }
+
+export const getAnalyzation = (title: string, content: string) => {
+  try {
+    const res = axiosInstance.post('/analyze', { title, content })
+    return res
+  } catch (error) {
+    console.log(error)
+  }
+}

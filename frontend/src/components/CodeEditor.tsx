@@ -7,10 +7,11 @@ import {
   faCircleCheck,
   faLightbulb,
   faRobot,
+  faTag,
 } from '@fortawesome/free-solid-svg-icons'
 import { Problem, ProblemRecord } from '../api/problemApi'
 import { completeProblem, getCompletedProblems } from '../api/userApi'
-import { getAnswer, getEvaluation } from '../api/aiAPi'
+import { getAnalyzation, getAnswer, getEvaluation } from '../api/aiAPi'
 import ReactMarkdown from 'react-markdown'
 
 const CodeLangMap: Record<number, string> = {
@@ -47,8 +48,7 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
   const [lang, setLang] = useState(0)
   const [code, setCode] = useState(codeSnippets[lang]?.code || '')
   const [showHint, setShowHint] = useState(false)
-  const [onAIState, setOnAIState] = useState(false)
-  const [onGettingAnswerState, setOnGeetingAnswerState] = useState(false)
+  const [AIState, setAIState] = useState('')
   const [isAILoading, setIsAILoading] = useState(false)
   const [evaluation, setEvaluation] = useState('')
   const [completedProblemsIDs, setCompletedProblemsIDs] = useState<
@@ -75,8 +75,7 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
   const onAI = async () => {
     if (!isAILoading) {
       setIsAILoading(true)
-      setOnAIState(true)
-      setOnGeetingAnswerState(false)
+      setAIState('evaluate')
       const res = await getEvaluation(problem.title, code)
       setEvaluation(res?.data?.message)
       setIsAILoading(false)
@@ -86,13 +85,22 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
   const onAIAnswer = async () => {
     if (!isAILoading) {
       setIsAILoading(true)
-      setOnGeetingAnswerState(true)
-      setOnAIState(false)
+      setAIState('answer')
       const res = await getAnswer(
         problem.title,
         problem.content,
         CodeLangMap[lang]
       )
+      setEvaluation(res?.data?.message)
+      setIsAILoading(false)
+    }
+  }
+
+  const onAIAnalyzeProblem = async () => {
+    if (!isAILoading) {
+      setIsAILoading(true)
+      setAIState('analyze')
+      const res = await getAnalyzation(problem.title, problem.content)
       setEvaluation(res?.data?.message)
       setIsAILoading(false)
     }
@@ -157,7 +165,7 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
               onClick={() => {
                 onAIAnswer()
               }}
-              style={onGettingAnswerState ? { color: 'orange' } : {}}
+              style={AIState === 'answer' ? { color: 'orange' } : {}}
               className="cursor-pointer"
             />
             <FontAwesomeIcon
@@ -167,11 +175,21 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
               onClick={() => {
                 onAI()
               }}
-              style={onAIState ? { color: 'purple' } : {}}
+              style={AIState === 'evaluate' ? { color: 'purple' } : {}}
               className="cursor-pointer"
             />
             <FontAwesomeIcon
               icon={faLightbulb}
+              title="Analyze the problem"
+              size="2x"
+              onClick={() => {
+                onAIAnalyzeProblem()
+              }}
+              style={AIState === 'analyze' ? { color: 'blue' } : {}}
+              className="cursor-pointer"
+            />
+            <FontAwesomeIcon
+              icon={faTag}
               size="2x"
               onClick={() => setShowHint(!showHint)}
               style={showHint ? { color: 'orange' } : {}}
