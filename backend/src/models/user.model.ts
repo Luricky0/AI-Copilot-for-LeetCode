@@ -4,12 +4,12 @@ import { ObjectId } from 'mongodb'
 
 export interface IProblemRecord {
   problemId: ObjectId
-  timestamp: Number
-  title: String
+  timestamp: number
+  title: string
 }
 export interface IGoalRecord{
-  goal: String
-  timestamp: Number
+  goal: string
+  timestamp: number
 }
 export interface Iuser extends Document {
   id: string

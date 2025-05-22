@@ -5,6 +5,8 @@ import dotenv from 'dotenv'
 import Problem from '../models/problem.model'
 import { ObjectId } from 'mongodb'
 import user from '../models/user.model'
+import { UserService } from '../services/user.service'
+import { randomInt } from 'crypto'
 
 export const login = async (req: Request, res: Response) => {
   const { id, password } = req.body
@@ -275,45 +277,64 @@ export const setGoal = async (req: Request, res: Response) => {
   }
 }
 
+// export const getRecommendation = async (req: Request, res: Response) => {
+//   const token = req.headers.authorization?.split(' ')[1]
+//   if (!token) {
+//     res.status(400).json({ message: 'Token is required' })
+//   } else {
+//     const decoded: any = jwt.verify(token, process.env.JWT_SECRET!)
+//     const userId = decoded.id
+//     const user = await User.findOne({ id: userId })
+//     if (!user) {
+//       res.status(404).json({ message: 'User not found' })
+//     } else {
+//       const goal = user.goals[user.goals.length - 1]?.goal
+//       if (!goal) {
+//         res.status(400).json({ message: 'No goal found for user' })
+//         return
+//       }
+
+//       const goalKeywords = goal.toLowerCase().split(/\s+/)
+//       const allProblems = await Problem.find({})
+
+//       const recommendedProblem = allProblems.find((problem) => {
+//         if (
+//           user.completedProblemsIDs.some((p) => {
+//             return p.problemId.toString() == problem._id?.toString()
+//           })
+//         )
+//           return false
+
+//         const tags = problem.topicTags.map((tag) => tag.name.toLowerCase())
+//         return goalKeywords.some((keyword) =>
+//           tags.some((tag) => tag.includes(keyword))
+//         )
+//       })
+
+//       if (recommendedProblem) {
+//         res.status(200).json({ problem: recommendedProblem })
+//       } else {
+//         res.status(404).json({ message: 'No matching problem found' })
+//       }
+//     }
+//   }
+// }
 export const getRecommendation = async (req: Request, res: Response) => {
-  const token = req.headers.authorization?.split(' ')[1]
-  if (!token) {
-    res.status(400).json({ message: 'Token is required' })
-  } else {
-    const decoded: any = jwt.verify(token, process.env.JWT_SECRET!)
-    const userId = decoded.id
-    const user = await User.findOne({ id: userId })
-    if (!user) {
-      res.status(404).json({ message: 'User not found' })
-    } else {
-      const goal = user.goals[user.goals.length - 1]?.goal
-      if (!goal) {
-        res.status(400).json({ message: 'No goal found for user' })
-        return
-      }
-
-      const goalKeywords = goal.toLowerCase().split(/\s+/)
-      const allProblems = await Problem.find({})
-
-      const recommendedProblem = allProblems.find((problem) => {
-        if (
-          user.completedProblemsIDs.some((p) => {
-            return p.problemId.toString() == problem._id?.toString()
-          })
-        )
-          return false
-
-        const tags = problem.topicTags.map((tag) => tag.name.toLowerCase())
-        return goalKeywords.some((keyword) =>
-          tags.some((tag) => tag.includes(keyword))
-        )
-      })
-
-      if (recommendedProblem) {
-        res.status(200).json({ problem: recommendedProblem })
-      } else {
-        res.status(404).json({ message: 'No matching problem found' })
-      }
+  const user = await UserService.getUserByToken(req)
+  try {
+    if (user == null) {
+      res.status(404)
+      return
     }
+    const recommendedProblems =
+      await UserService.generateTagNGoalBasedRecommendation(user)
+    const random = randomInt(recommendedProblems.length)
+    const recommendedProblem = recommendedProblems[random]
+    res.status(200).json({
+      recommendedProblem,
+    })
+  } catch (error) {
+    console.log(error)
+    res.status(505)
   }
 }

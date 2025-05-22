@@ -57,6 +57,6 @@ const problemSchema = new Schema<Iproblem>({
 });
 
 
-const problem = mongoose.model<Iproblem>('problem', problemSchema)
+const Problem = mongoose.model<Iproblem>('problem', problemSchema)
 
-export default problem
+export default Problem

@@ -55,7 +55,7 @@ export const postGoal = async (goal: string) => {
 export const getRecommendation = async () => {
   try {
     const res = await axiosInstance.get('/recommendation')
-    return res.data.problem
+    return res.data.recommendedProblem
   } catch (error) {
     console.log(error)
   }
