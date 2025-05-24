@@ -6,6 +6,7 @@ import user from '../models/user.model'
 import problem from '../models/problem.model'
 import Problem from '../models/problem.model'
 import { wrap } from 'module'
+import { Types } from 'mongoose'
 
 const getUserByToken = async (req: Request): Promise<Iuser | null> => {
   const token = req.headers.authorization?.split(' ')[1]
@@ -260,7 +261,37 @@ const generateTagNGoalBasedRecommendation = async (user: Iuser) => {
   return finalRecommendations
 }
 
+const toggleProblemStatus = async (
+  user: Iuser,
+  problemId: string,
+  title: string,
+  type: 'complete' | 'like'
+) => {
+  const problem = await Problem.findById(problemId)
+  if (!problem) {
+    throw new Error('Problem not found')
+  }
+  const timestamp = Date.now()
+  const targetListName =
+    type === 'complete' ? 'completedProblemsIDs' : 'likedProblemsIDs'
+  const userList = user[targetListName] as IProblemRecord[]
+
+  const existingIndex = userList.findIndex(
+    (p) => p.problemId.toString() === problemId
+  )
+
+  if (existingIndex !== -1) {
+    userList.splice(existingIndex, 1)
+  } else {
+    const problemObjectId = new Types.ObjectId(problemId)
+    userList.push({ problemId: problemObjectId, title, timestamp })
+  }
+
+  await user.save()
+}
+
 export const UserService = {
   getUserByToken,
   generateTagNGoalBasedRecommendation,
+  toggleProblemStatus,
 }
