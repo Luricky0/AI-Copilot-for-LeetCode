@@ -70,7 +70,20 @@ export const likeProblem = async (req: Request, res: Response) => {
   const user = await UserService.getUserByToken(req)
   const { problemId, title } = req.body
   if (user) {
-    UserService.toggleProblemStatus(user, problemId, title, 'like')
+    try {
+      const userList = await UserService.toggleProblemStatus(
+        user,
+        problemId,
+        title,
+        'like'
+      )
+      res.status(200).json({
+        likeProblemsIDs: userList,
+      })
+    } catch (err) {
+      console.log(err)
+      res.status(500)
+    }
   }
 }
 

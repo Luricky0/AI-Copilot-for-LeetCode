@@ -288,6 +288,7 @@ const toggleProblemStatus = async (
   }
 
   await user.save()
+  return userList
 }
 
 export const UserService = {
