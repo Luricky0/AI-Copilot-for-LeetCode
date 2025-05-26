@@ -111,53 +111,22 @@ export const getLikedProblems = async (req: Request, res: Response) => {
 }
 
 export const completeProblem = async (req: Request, res: Response) => {
+  const user = await UserService.getUserByToken(req)
   const { problemId, title } = req.body
-  const token = req.headers.authorization?.split(' ')[1]
-  if (!token) {
-    res.status(400).json({ message: 'Token is required' })
-  } else {
+  if (user) {
     try {
-      const decoded: any = jwt.verify(token, process.env.JWT_SECRET!)
-      const user = await User.findOne({ id: decoded.id })
-      if (!user) {
-        res.status(404).json({
-          message: 'No such user',
-        })
-      } else {
-        const problem = await Problem.findById(problemId)
-        if (!problem) {
-          res.status(404).json({
-            message: 'Problem not found',
-          })
-        } else {
-          const currentTime = Date.now()
-          if (
-            !user.completedProblemsIDs.some(
-              (p) => p.problemId.toString() === problemId
-            )
-          ) {
-            user.completedProblemsIDs.push({
-              problemId,
-              timestamp: currentTime,
-              title,
-            })
-            await user.save()
-            res.status(200).json({
-              message: 'Problem marked as completed successfully',
-            })
-          } else {
-            user.completedProblemsIDs = user.completedProblemsIDs.filter(
-              (p) => p.problemId.toString() !== problemId
-            )
-            await user.save()
-            res.status(200).json({
-              message: 'Problem marked as not completed successfully',
-            })
-          }
-        }
-      }
-    } catch (error) {
-      console.log(error)
+      const userList = await UserService.toggleProblemStatus(
+        user,
+        problemId,
+        title,
+        'complete'
+      )
+      res.status(200).json({
+        likeProblemsIDs: userList,
+      })
+    } catch (err) {
+      console.log(err)
+      res.status(500)
     }
   }
 }
