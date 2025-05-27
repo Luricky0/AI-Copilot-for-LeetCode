@@ -291,8 +291,25 @@ const toggleProblemStatus = async (
   return userList
 }
 
+const login = async (id: string, password: string) => {
+  const user = await User.findOne({ id })
+  if (!user) {
+    throw new Error('User not found')
+  } else {
+    const isMatch = await user.comparePassword(password)
+    if (!isMatch) {
+      throw new Error('Invalid credentials')
+    }
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET!, {
+      expiresIn: '7d',
+    })
+    return token
+  }
+}
+
 export const UserService = {
   getUserByToken,
   generateTagNGoalBasedRecommendation,
   toggleProblemStatus,
+  login
 }

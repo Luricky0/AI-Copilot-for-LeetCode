@@ -10,29 +10,9 @@ import { randomInt } from 'crypto'
 
 export const login = async (req: Request, res: Response) => {
   const { id, password } = req.body
-
   try {
-    const user = await User.findOne({ id })
-    if (!user) {
-      res.status(404).json({
-        message: 'User not found',
-      })
-    } else {
-      const isMatch = await user.comparePassword(password)
-      if (!isMatch) {
-        res.status(404).json({
-          message: 'Invalid credentials',
-        })
-      }
-
-      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET!, {
-        expiresIn: '7d',
-      })
-      res.status(200).json({
-        message: 'Login successful',
-        token,
-      })
-    }
+    const token = UserService.login(id, password)
+    res.status(200).json({ token })
   } catch (err) {
     console.error(err)
     res.status(500).json({
