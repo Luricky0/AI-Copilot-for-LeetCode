@@ -24,22 +24,8 @@ export const login = async (req: Request, res: Response) => {
 export const register = async (req: Request, res: Response) => {
   const { id, password } = req.body
   try {
-    const user = await User.findOne({ id })
-    if (user) {
-      res.status(404).json({
-        message: 'User id existed',
-      })
-    }
-
-    const newUser = new User({ id, password })
-    await newUser.save()
-    const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET!, {
-      expiresIn: '7d',
-    })
-    res.status(201).json({
-      message: 'Register successful',
-      token,
-    })
+    const token = UserService.register(id, password)
+    res.status(200).json({ token })
   } catch (error) {
     console.error(error)
     res.status(500)

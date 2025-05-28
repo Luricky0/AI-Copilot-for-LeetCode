@@ -307,9 +307,24 @@ const login = async (id: string, password: string) => {
   }
 }
 
+const register = async (id: string, password: string) => {
+  const user = await User.findOne({ id })
+  if (user) {
+    throw new Error('user existed')
+  }
+
+  const newUser = new User({ id, password })
+  await newUser.save()
+  const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET!, {
+    expiresIn: '7d',
+  })
+  return token
+}
+
 export const UserService = {
   getUserByToken,
   generateTagNGoalBasedRecommendation,
   toggleProblemStatus,
-  login
+  login,
+  register,
 }
