@@ -88,7 +88,7 @@ export const completeProblem = async (req: Request, res: Response) => {
         'complete'
       )
       res.status(200).json({
-        likeProblemsIDs: userList,
+        completedProblemsIDs: userList,
       })
     } catch (err) {
       console.log(err)
