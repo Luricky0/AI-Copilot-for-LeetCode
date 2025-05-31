@@ -8,6 +8,14 @@ import Problem from '../models/problem.model'
 import { wrap } from 'module'
 import { Types } from 'mongoose'
 
+const checkToken = async (token: string) => {
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
+    return true;
+  } catch (err) {
+    return false;
+  }
+};
 const getUserByToken = async (req: Request): Promise<Iuser | null> => {
   const token = req.headers.authorization?.split(' ')[1]
   if (!token) {
@@ -322,6 +330,7 @@ const register = async (id: string, password: string) => {
 }
 
 export const UserService = {
+  checkToken,
   getUserByToken,
   generateTagNGoalBasedRecommendation,
   toggleProblemStatus,

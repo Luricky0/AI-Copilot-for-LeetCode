@@ -1,5 +1,13 @@
 import axiosInstance from '../utils/axiosInstance'
 
+export const checkToken = async () => {
+  try {
+    const res = await axiosInstance.get('/checktoken')
+    return res.data.valid
+  } catch (error) {
+    console.log(error)
+  }
+}
 export const getLikedProblems = async () => {
   try {
     const res = await axiosInstance.get('/liked')

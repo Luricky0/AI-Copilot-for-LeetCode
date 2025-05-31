@@ -8,10 +8,22 @@ import user from '../models/user.model'
 import { UserService } from '../services/user.service'
 import { randomInt } from 'crypto'
 
+export const checkToken = async (req: Request, res: Response) => {
+  const token = req.headers.authorization?.split(' ')[1]
+  if (token) {
+    try {
+      const valid = await UserService.checkToken(token)
+      res.status(200).json({ valid })
+    } catch (err) {
+      console.log(err)
+      res.status(500)
+    }
+  }
+}
 export const login = async (req: Request, res: Response) => {
   const { id, password } = req.body
   try {
-    const token = UserService.login(id, password)
+    const token = await UserService.login(id, password)
     res.status(200).json({ token })
   } catch (err) {
     console.error(err)
@@ -24,7 +36,7 @@ export const login = async (req: Request, res: Response) => {
 export const register = async (req: Request, res: Response) => {
   const { id, password } = req.body
   try {
-    const token = UserService.register(id, password)
+    const token = await UserService.register(id, password)
     res.status(200).json({ token })
   } catch (error) {
     console.error(error)
