@@ -10,12 +10,12 @@ import { Types } from 'mongoose'
 
 const checkToken = async (token: string) => {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
-    return true;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!)
+    return true
   } catch (err) {
-    return false;
+    return false
   }
-};
+}
 const getUserByToken = async (req: Request): Promise<Iuser | null> => {
   const token = req.headers.authorization?.split(' ')[1]
   if (!token) {
@@ -329,6 +329,18 @@ const register = async (id: string, password: string) => {
   return token
 }
 
+const setGoal = async (user: Iuser, goal: string) => {
+  const currentTime = Date.now()
+  user.goals.push({
+    goal,
+    timestamp: currentTime,
+  })
+  if (user.goals.length > 100) {
+    user.goals = user.goals.slice(-100)
+  }
+  await user.save()
+  return user.goals
+}
 export const UserService = {
   checkToken,
   getUserByToken,
@@ -336,4 +348,5 @@ export const UserService = {
   toggleProblemStatus,
   login,
   register,
+  setGoal
 }
