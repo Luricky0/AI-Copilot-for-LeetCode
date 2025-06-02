@@ -16,8 +16,12 @@ export const checkToken = async (req: Request, res: Response) => {
       const valid = await UserService.checkToken(token)
       res.status(200).json({ valid })
     } catch (err) {
-      console.log(err)
-      res.status(500)
+      if (err instanceof ApiError) {
+        console.error(err)
+        res.status(err.statusCode || 500).json({
+          message: err.message || 'Internal Server Error',
+        })
+      }
     }
   }
 }
@@ -27,10 +31,12 @@ export const login = async (req: Request, res: Response) => {
     const token = await UserService.login(id, password)
     res.status(200).json({ token })
   } catch (err) {
-    console.error(err)
-    res.status(500).json({
-      message: 'Server error',
-    })
+    if (err instanceof ApiError) {
+      console.error(err)
+      res.status(err.statusCode || 500).json({
+        message: err.message || 'Internal Server Error',
+      })
+    }
   }
 }
 
@@ -39,9 +45,13 @@ export const register = async (req: Request, res: Response) => {
   try {
     const token = await UserService.register(id, password)
     res.status(200).json({ token })
-  } catch (error) {
-    console.error(error)
-    res.status(500)
+  } catch (err) {
+    if (err instanceof ApiError) {
+      console.error(err)
+      res.status(err.statusCode || 500).json({
+        message: err.message || 'Internal Server Error',
+      })
+    }
   }
 }
 
@@ -60,8 +70,12 @@ export const likeProblem = async (req: Request, res: Response) => {
         likeProblemsIDs: userList,
       })
     } catch (err) {
-      console.log(err)
-      res.status(500)
+      if (err instanceof ApiError) {
+        console.error(err)
+        res.status(err.statusCode || 500).json({
+          message: err.message || 'Internal Server Error',
+        })
+      }
     }
   }
 }
@@ -104,8 +118,12 @@ export const completeProblem = async (req: Request, res: Response) => {
         completedProblemsIDs: userList,
       })
     } catch (err) {
-      console.log(err)
-      res.status(500)
+      if (err instanceof ApiError) {
+        console.error(err)
+        res.status(err.statusCode || 500).json({
+          message: err.message || 'Internal Server Error',
+        })
+      }
     }
   }
 }
@@ -190,8 +208,12 @@ export const getRecommendation = async (req: Request, res: Response) => {
     res.status(200).json({
       recommendedProblem,
     })
-  } catch (error) {
-    console.log(error)
-    res.status(505)
+  } catch (err) {
+    if (err instanceof ApiError) {
+      console.error(err)
+      res.status(err.statusCode || 500).json({
+        message: err.message || 'Internal Server Error',
+      })
+    }
   }
 }
