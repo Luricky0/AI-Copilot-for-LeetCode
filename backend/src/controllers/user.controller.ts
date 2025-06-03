@@ -81,24 +81,17 @@ export const likeProblem = async (req: Request, res: Response) => {
 }
 
 export const getLikedProblems = async (req: Request, res: Response) => {
-  const token = req.headers.authorization?.split(' ')[1]
-  if (!token) {
-    res.status(400).json({ message: 'Token is required' })
-  } else {
-    try {
-      const decoded: any = jwt.verify(token, process.env.JWT_SECRET!)
-      const userId = decoded.id
-      const user = await User.findOne({ id: userId })
-      if (!user) {
-        res.status(404).json({ message: 'User not found' })
-      } else {
-        res.status(200).json({
-          likedProblemsIDs: user.likedProblemsIDs,
-        })
-      }
-    } catch (err) {
+  try {
+    const user = await UserService.getUserByToken(req)
+    res.status(200).json({
+      likedProblemsIDs: user!.likedProblemsIDs,
+    })
+  } catch (err) {
+    if (err instanceof ApiError) {
       console.error(err)
-      res.status(500).json({ message: 'Server error' })
+      res.status(err.statusCode || 500).json({
+        message: err.message || 'Internal Server Error',
+      })
     }
   }
 }

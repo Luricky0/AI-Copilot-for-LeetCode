@@ -7,6 +7,7 @@ import problem from '../models/problem.model'
 import Problem from '../models/problem.model'
 import { wrap } from 'module'
 import { Types } from 'mongoose'
+import { ApiError } from '../utils/ApiError'
 
 const checkToken = async (token: string) => {
   try {
@@ -20,7 +21,7 @@ const getUserByToken = async (req: Request): Promise<Iuser | null> => {
   const token = req.headers.authorization?.split(' ')[1]
   if (!token) {
     console.log('No token found in headers')
-    return null
+    throw new ApiError(404, 'No token found in headers')
   }
 
   try {
@@ -30,7 +31,7 @@ const getUserByToken = async (req: Request): Promise<Iuser | null> => {
     return user
   } catch (error) {
     console.error('Token verification failed:', error)
-    return null
+    throw new ApiError(404, 'Token Unvalid')
   }
 }
 
@@ -211,7 +212,6 @@ const generateTagNGoalBasedRecommendation = async (user: Iuser) => {
   for (const r in completedTags) {
     scoredTags[r] = (scoredTags[r] || 0) - 2
   }
-  console.log(scoredTags)
   const completedIds = user.completedProblemsIDs.map((r) =>
     r.problemId.toString()
   )
@@ -348,5 +348,5 @@ export const UserService = {
   toggleProblemStatus,
   login,
   register,
-  setGoal
+  setGoal,
 }
