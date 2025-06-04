@@ -277,7 +277,7 @@ const toggleProblemStatus = async (
 ) => {
   const problem = await Problem.findById(problemId)
   if (!problem) {
-    throw new Error('Problem not found')
+    throw new ApiError(404, 'Problem not found')
   }
   const timestamp = Date.now()
   const targetListName =
@@ -302,11 +302,11 @@ const toggleProblemStatus = async (
 const login = async (id: string, password: string) => {
   const user = await User.findOne({ id })
   if (!user) {
-    throw new Error('User not found')
+    throw new ApiError(404, 'User not found')
   } else {
     const isMatch = await user.comparePassword(password)
     if (!isMatch) {
-      throw new Error('Invalid credentials')
+      throw new ApiError(404, 'Invalid credentials')
     }
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET!, {
       expiresIn: '7d',
@@ -318,7 +318,7 @@ const login = async (id: string, password: string) => {
 const register = async (id: string, password: string) => {
   const user = await User.findOne({ id })
   if (user) {
-    throw new Error('user existed')
+    throw new ApiError(404, 'user existed')
   }
 
   const newUser = new User({ id, password })
