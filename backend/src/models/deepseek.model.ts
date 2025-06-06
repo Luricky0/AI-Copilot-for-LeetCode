@@ -1,5 +1,6 @@
 import OpenAI from 'openai'
 import dotenv from 'dotenv'
+import { ApiError } from '../utils/ApiError'
 dotenv.config()
 
 const openai = new OpenAI({
@@ -22,11 +23,10 @@ const createChat = async (prompt: string) => {
         await new Promise((res) => setTimeout(res, 1000))
         continue
       }
-      throw err
+      throw new ApiError(500,'Deepseek server error')
     }
   }
 }
-
 
 const deepseek = {
   createChat

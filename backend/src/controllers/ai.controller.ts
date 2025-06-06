@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import gemini from '../models/gemini.model'
 import deepseek from '../models/deepseek.model'
 import AIService from '../services/ai.service'
+import { ApiError } from '../utils/ApiError'
 export const evaluateCode = async (req: Request, res: Response) => {
   const { title, code } = req.body
   try {
@@ -10,8 +11,10 @@ export const evaluateCode = async (req: Request, res: Response) => {
       message: aiRes,
     })
   } catch (error) {
-    console.log(error)
-    res.status(500)
+    if (error instanceof ApiError) {
+      console.log(error)
+      res.status(error.statusCode).json(error.message)
+    }
   }
 }
 
@@ -23,8 +26,10 @@ export const getAnswer = async (req: Request, res: Response) => {
       message: aiRes,
     })
   } catch (error) {
-    console.log(error)
-    res.status(500)
+    if (error instanceof ApiError) {
+      console.log(error)
+      res.status(error.statusCode).json(error.message)
+    }
   }
 }
 
@@ -36,7 +41,9 @@ export const getAnalyzation = async (req: Request, res: Response) => {
       message: aiRes,
     })
   } catch (error) {
-    console.log(error)
-    res.status(500)
+    if (error instanceof ApiError) {
+      console.log(error)
+      res.status(error.statusCode).json(error.message)
+    }
   }
 }

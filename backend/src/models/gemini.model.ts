@@ -1,5 +1,6 @@
 import { GoogleGenAI } from '@google/genai'
 import dotenv from 'dotenv'
+import { ApiError } from '../utils/ApiError'
 
 dotenv.config()
 
@@ -21,7 +22,7 @@ const createChat = async (prompt: string) => {
         await new Promise((res) => setTimeout(res, 1000))
         continue
       }
-      throw err
+      throw new ApiError(500,'Gemini server error')
     }
   }
 }

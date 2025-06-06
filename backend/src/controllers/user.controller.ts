@@ -137,9 +137,11 @@ export const getCompletedProblems = async (req: Request, res: Response) => {
           completedProblemsIDs: user.completedProblemsIDs,
         })
       }
-    } catch (err) {
-      console.error(err)
-      res.status(500).json({ message: 'Server error' })
+    } catch (error) {
+      if (error instanceof ApiError) {
+        console.log(error)
+        res.status(error.statusCode).json(error.message)
+      }
     }
   }
 }
