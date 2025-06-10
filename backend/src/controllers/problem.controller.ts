@@ -5,6 +5,8 @@ import jwt from 'jsonwebtoken'
 import User from '../models/user.model'
 import { UserService } from '../services/user.service'
 import ProblemService from '../services/problem.service'
+import { APIError } from 'openai'
+import { ApiError } from '../utils/ApiError'
 
 const escapeRegex = (text: string): string => {
   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
@@ -35,7 +37,10 @@ export const getPaginatedProblems = async (req: Request, res: Response) => {
 
     res.status(200).json(getPageRes)
   } catch (error) {
-    res.status(500).json({ message: 'Failed', error })
+    console.log(error)
+    if (error instanceof ApiError) {
+      res.status(error.statusCode).json(error.message)
+    }
   }
 }
 
@@ -54,9 +59,9 @@ export const getProblem = async (req: Request, res: Response) => {
     }
   } catch (error) {
     console.log(error)
-    res.status(500).json({
-      message: 'Sever error',
-    })
+    if (error instanceof ApiError) {
+      res.status(error.statusCode).json(error.message)
+    }
   }
 }
 
