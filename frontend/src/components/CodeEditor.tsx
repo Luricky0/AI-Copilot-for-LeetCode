@@ -54,6 +54,7 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
   const [completedProblemsIDs, setCompletedProblemsIDs] = useState<
     ProblemRecord[]
   >([])
+  const [AIModel, setAIModel] = useState('')
 
   const load = async () => {
     try {
@@ -76,7 +77,7 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
     if (!isAILoading) {
       setIsAILoading(true)
       setAIState('evaluate')
-      const res = await getEvaluation(problem.title, code)
+      const res = await getEvaluation(problem.title, code, AIModel)
       setEvaluation(res?.data?.message)
       setIsAILoading(false)
     }
@@ -89,7 +90,8 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
       const res = await getAnswer(
         problem.title,
         problem.content,
-        CodeLangMap[lang]
+        CodeLangMap[lang],
+        AIModel
       )
       setEvaluation(res?.data?.message)
       setIsAILoading(false)
@@ -100,7 +102,7 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
     if (!isAILoading) {
       setIsAILoading(true)
       setAIState('analyze')
-      const res = await getAnalyzation(problem.title, problem.content)
+      const res = await getAnalyzation(problem.title, problem.content, AIModel)
       setEvaluation(res?.data?.message)
       setIsAILoading(false)
     }
@@ -196,6 +198,13 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
               title="Show the hints"
               className="cursor-pointer"
             />
+            <select
+              value={AIModel}
+              onChange={(e) => setAIModel(e.target.value)}
+              className="border px-2 py-1 rounded">
+              <option value="deepseek">Deepseek</option>
+              <option value="gemini">Gemini</option>
+            </select>
           </div>
         </div>
         <div className="flex-1 overflow-hidden">

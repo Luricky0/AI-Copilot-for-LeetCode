@@ -41,6 +41,7 @@ export const getPaginatedProblems = async (req: Request, res: Response) => {
     if (error instanceof ApiError) {
       res.status(error.statusCode).json(error.message)
     }
+    
   }
 }
 
