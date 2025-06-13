@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongoose'
 import Problem from '../models/problem.model'
 import { Iuser } from '../models/user.model'
 import { ApiError } from '../utils/ApiError'
@@ -56,7 +57,14 @@ const getPage = async (
   }
 }
 
+const getProblemByID = async (id:string) => {
+  const problem = await Problem.findById(id)
+  if (!problem) throw new ApiError(404, 'No such problem')
+  return problem
+}
+
 const ProblemService = {
   getPage,
+  getProblemByID,
 }
 export default ProblemService

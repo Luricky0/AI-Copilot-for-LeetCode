@@ -41,28 +41,25 @@ export const getPaginatedProblems = async (req: Request, res: Response) => {
     if (error instanceof ApiError) {
       res.status(error.statusCode).json(error.message)
     }
-    
   }
 }
 
 export const getProblem = async (req: Request, res: Response) => {
   const { problemId } = req.query
-  try {
-    const problem = await Problem.findById(problemId)
-    if (problem) {
+  if (typeof problemId === 'string') {
+    try {
+      const problem = await ProblemService.getProblemByID(problemId)
       res.status(200).json({
         problem,
       })
-    } else {
-      res.status(404).json({
-        message: 'No such problem',
-      })
+    } catch (error) {
+      console.log(error)
+      if (error instanceof ApiError) {
+        res.status(error.statusCode).json(error.message)
+      }
     }
-  } catch (error) {
-    console.log(error)
-    if (error instanceof ApiError) {
-      res.status(error.statusCode).json(error.message)
-    }
+  } else {
+    res.status(404).json({ message: 'Bad Request' })
   }
 }
 
