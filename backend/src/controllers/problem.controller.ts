@@ -13,29 +13,36 @@ const escapeRegex = (text: string): string => {
 }
 
 export const getPaginatedProblems = async (req: Request, res: Response) => {
-  const {
-    page,
-    limit,
-    skip,
-    searchQuery,
-    difficultyFilter,
-    likedOnly,
-    completedOnly,
-  } = req.body
+  const { page, limit, skip, likedOnly, completedOnly } = req.query
+  const searchQuery = req.query.searchQuery as string | undefined
+  const difficultyFilter = req.query.searchQuery as string | undefined
   try {
-    const user = await UserService.getUserByToken(req)
-    const getPageRes = await ProblemService.getPage(
-      page,
-      limit,
-      skip,
-      searchQuery,
-      difficultyFilter,
-      likedOnly,
-      completedOnly,
-      user!
-    )
-
-    res.status(200).json(getPageRes)
+    if (likedOnly === 'true' || completedOnly === 'true') {
+      const user = await UserService.getUserByToken(req)
+      const getPageRes = await ProblemService.getPage(
+        Number(page),
+        Number(limit),
+        Number(skip),
+        searchQuery,
+        difficultyFilter,
+        likedOnly === 'true',
+        completedOnly === 'true',
+        user
+      )
+      res.status(200).json(getPageRes)
+    } else {
+      const getPageRes = await ProblemService.getPage(
+        Number(page),
+        Number(limit),
+        Number(skip),
+        searchQuery,
+        difficultyFilter,
+        likedOnly === 'true',
+        completedOnly === 'true',
+        null
+      )
+      res.status(200).json(getPageRes)
+    }
   } catch (error) {
     console.log(error)
     if (error instanceof ApiError) {
