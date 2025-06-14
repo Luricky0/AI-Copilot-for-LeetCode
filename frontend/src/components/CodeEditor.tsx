@@ -148,6 +148,13 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
           </div>
 
           <div className="flex flex-row-reverse gap-3 px-2">
+            <select
+              value={AIModel}
+              onChange={(e) => setAIModel(e.target.value)}
+              className="border px-2 py-1 rounded">
+              <option value="deepseek">Deepseek</option>
+              <option value="gemini">Gemini</option>
+            </select>
             <FontAwesomeIcon
               icon={faCircleCheck}
               size="2x"
@@ -198,13 +205,6 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
               title="Show the hints"
               className="cursor-pointer"
             />
-            <select
-              value={AIModel}
-              onChange={(e) => setAIModel(e.target.value)}
-              className="border px-2 py-1 rounded">
-              <option value="deepseek">Deepseek</option>
-              <option value="gemini">Gemini</option>
-            </select>
           </div>
         </div>
         <div className="flex-1 overflow-hidden">
