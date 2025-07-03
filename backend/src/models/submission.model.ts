@@ -3,8 +3,8 @@ import mongoose, { Schema, Document, Model, Types } from 'mongoose'
 export interface ISubmission extends Document {
   userId: Types.ObjectId
   questionId: Types.ObjectId
-  code?: string
-  lang?: string
+  code: string
+  lang: string
   timestamp: Date
   embedding?: number[]
 }

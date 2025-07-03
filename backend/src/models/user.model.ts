@@ -1,17 +1,18 @@
 import mongoose, { Schema, Document } from 'mongoose'
 import bcrypt from 'bcryptjs'
-import { ObjectId } from 'mongodb'
+import { Types } from 'mongoose'
 
 export interface IProblemRecord {
-  problemId: ObjectId
+  problemId: Types.ObjectId
   timestamp: number
   title: string
 }
-export interface IGoalRecord{
+export interface IGoalRecord {
   goal: string
   timestamp: number
 }
 export interface Iuser extends Document {
+  _id: Types.ObjectId
   id: string
   password: string
   comparePassword(candidatePassword: string): Promise<boolean>
@@ -23,7 +24,7 @@ export interface Iuser extends Document {
 
 const userSchema = new Schema({
   id: {
-    type: Number,
+    type: String,
     required: true,
     unique: true,
   },
@@ -34,7 +35,7 @@ const userSchema = new Schema({
   likedProblemsIDs: {
     type: [
       {
-        problemId: { type: ObjectId },
+        problemId: { type: Schema.Types.ObjectId },
         timestamp: { type: Number, default: Date.now },
         title: { type: String, default: '' },
       },
@@ -44,7 +45,7 @@ const userSchema = new Schema({
   completedProblemsIDs: {
     type: [
       {
-        problemId: { type: ObjectId },
+        problemId: { type: Schema.Types.ObjectId },
         timestamp: { type: Number, default: Date.now },
         title: { type: String, default: '' },
       },

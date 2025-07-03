@@ -1,6 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose'
 
-// 定义 TopicTag 接口
 interface TopicTag {
   name: string;
   slug: string;
@@ -29,9 +28,6 @@ interface Iproblem extends Document {
   };
   hints: string[];
 }
-
-// 定义 MongoDB Schema
-
 
 const problemSchema = new Schema<Iproblem>({
   problemId: { type: String, required: true },

@@ -1,8 +1,10 @@
 import { Request, Response } from 'express'
-import gemini from '../models/gemini.model'
-import deepseek from '../models/deepseek.model'
 import AIService from '../services/ai.service'
 import { ApiError } from '../utils/ApiError'
+import { UserService } from '../services/user.service'
+import { SubmissionSevice } from '../services/submission.service'
+import { Types } from 'mongoose'
+
 export const evaluateCode = async (req: Request, res: Response) => {
   const { title, code, model } = req.body
   try {
@@ -48,8 +50,15 @@ export const getAnswer = async (req: Request, res: Response) => {
 }
 
 export const getAnalyzation = async (req: Request, res: Response) => {
-  const { title, content, model } = req.body
+  const { title, content, model, problemId } = req.body
   try {
+    const user = await UserService.getUserByToken(req)
+    if (user)
+      await SubmissionSevice.addOneSubmission(
+        user._id,
+        new Types.ObjectId(problemId),
+        content
+      )
     if (model) {
       const aiRes = await AIService.analyzeProblem(title, content, model)
       res.status(200).json({
