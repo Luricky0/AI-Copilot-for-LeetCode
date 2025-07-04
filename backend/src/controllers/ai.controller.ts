@@ -57,7 +57,8 @@ export const getAnalyzation = async (req: Request, res: Response) => {
       await SubmissionSevice.addOneSubmission(
         user._id,
         new Types.ObjectId(problemId),
-        content
+        content,
+        model
       )
     if (model) {
       const aiRes = await AIService.analyzeProblem(title, content, model)

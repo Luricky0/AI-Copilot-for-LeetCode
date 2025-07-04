@@ -4,7 +4,8 @@ import Submission from '../models/submission.model'
 const addOneSubmission = async (
   userId: Types.ObjectId,
   problemId: Types.ObjectId,
-  code: string
+  code: string,
+  model: string
 ) => {
   const newSubmission = new Submission({
     userId,
