@@ -22,12 +22,21 @@ const createChat = async (prompt: string) => {
         await new Promise((res) => setTimeout(res, 1000))
         continue
       }
-      throw new ApiError(500,'Gemini server error')
+      throw new ApiError(500, 'Gemini server error')
     }
   }
 }
 
+const getEmbedding = async (text: string) => {
+  const resp = await ai.models.embedContent({
+    model: 'gemini-embedding-exp-03-07',
+    contents: text,
+  })
+  return resp.embeddings as number[]
+}
+
 const gemini = {
-  createChat
+  createChat,
+  getEmbedding,
 }
 export default gemini
