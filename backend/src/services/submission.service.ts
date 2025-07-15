@@ -19,6 +19,17 @@ const addOneSubmission = async (
   return await newSubmission.save()
 }
 
+const getEmbedding = async (
+  userId: Types.ObjectId,
+  problemId: Types.ObjectId
+) => {
+  const submissions = await Submission.find({ userId, problemId }).sort({
+    timeStamp: -1,
+  })
+  return submissions.map((sub) => sub.embedding)
+}
+
 export const SubmissionSevice = {
   addOneSubmission,
+  getEmbedding,
 }
