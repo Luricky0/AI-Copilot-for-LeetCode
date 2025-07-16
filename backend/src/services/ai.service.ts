@@ -4,7 +4,8 @@ import gemini from '../models/gemini.model'
 const evaluateCode = async (
   title: string,
   code: string,
-  model = 'deepseek'
+  model = 'deepseek',
+  embedding = []
 ) => {
   const prompt = `
       You are a professional LeetCode code reviewer. Review the user's submission using the following structured and concise format:

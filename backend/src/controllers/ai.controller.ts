@@ -6,19 +6,29 @@ import { SubmissionSevice } from '../services/submission.service'
 import { Types } from 'mongoose'
 
 export const evaluateCode = async (req: Request, res: Response) => {
-  const { title, code, model } = req.body
+  const { title, code, model, problemId } = req.body
   try {
-    if (model) {
-      const aiRes = await AIService.evaluateCode(title, code, model)
-      res.status(200).json({
-        message: aiRes,
-      })
-    } else {
-      const aiRes = await AIService.evaluateCode(title, code)
-      res.status(200).json({
-        message: aiRes,
-      })
+    const user = await UserService.getUserByToken(req)
+    const userId = user?._id
+    if (userId) {
+      const embedding = await SubmissionSevice.getEmbedding(userId, problemId)
+      if (embedding) {
+        const aiRes = await AIService.evaluateCode(
+          title,
+          code,
+          model,
+          embedding
+        )
+        res.status(200).json({
+          message: aiRes,
+        })
+      }
     }
+
+    const aiRes = await AIService.evaluateCode(title, code, model)
+    res.status(200).json({
+      message: aiRes,
+    })
   } catch (error) {
     if (error instanceof ApiError) {
       console.log(error)
