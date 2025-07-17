@@ -26,7 +26,11 @@ const getEmbedding = async (
   const submissions = await Submission.find({ userId, problemId }).sort({
     timeStamp: -1,
   })
-  return submissions.map((sub) => sub.embedding)
+  const embeddings = submissions
+    .map((sub) => sub.embedding)
+    .filter((emb): emb is number[] => emb !== undefined)
+
+  return embeddings
 }
 
 export const SubmissionSevice = {

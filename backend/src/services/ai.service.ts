@@ -5,14 +5,18 @@ const evaluateCode = async (
   title: string,
   code: string,
   model = 'deepseek',
-  embedding = []
+  embeddings: number[][] = [[]]
 ) => {
+  const embeddingsString = embeddings.map(e => e.join(',')).join(';');
   const prompt = `
       You are a professional LeetCode code reviewer. Review the user's submission using the following structured and concise format:
 
       1. **Code Score (0–10)**: Give a numeric score, followed by a *very short* justification (max 20 words).
       2. **Issues Detected**: Identify any bugs, inefficiencies, or code smells (max 100 words, be specific and technical).
       3. **Next Step Only**: Suggest exactly one next step to improve or debug the code — do not reveal full answers or code (max 100 words, no code, only concise clue-style advice).
+
+      ### Previous Code Embeddings:
+      ${embeddingsString}
 
       ### Problem:
       ${title}
