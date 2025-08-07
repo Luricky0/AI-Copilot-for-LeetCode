@@ -6,11 +6,17 @@ import ProblemList from '../components/ProblemList'
 import ProblemDisplay from '../components/ProblemDisplay'
 import ProblemPage from '../pages/ProblemPage'
 import MainPage from '../pages/MainPage'
+import MessageBox from '../components/MessageBox'
 
 export const routes: RouteObject[] = [
   {
     path: '/login',
-    element: <LoginPortal />,
+    element: (
+      <>
+        <MessageBox />
+        <LoginPortal />
+      </>
+    ),
   },
   {
     path: '/',

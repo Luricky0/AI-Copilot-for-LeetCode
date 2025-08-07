@@ -19,7 +19,7 @@ const UserCard = ({ likedProblemsIDs, completedProblemsIDs }: any) => {
   const navigate = useNavigate()
   const onLogout = () => {
     user.removeToken()
-    navigate('/')
+    navigate('/login')
   }
 
   const [heatmapValue, setHeatmapValue] = useState<

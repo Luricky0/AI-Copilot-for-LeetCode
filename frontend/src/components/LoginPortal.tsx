@@ -2,21 +2,28 @@ import React, { useState } from 'react'
 import axiosInstance from '../utils/axiosInstance'
 import { fetchRegister } from '../api/accountApi'
 import { useUserContext } from '../contexts/userContext'
+import { showError } from '../utils/messageManage'
+import { useNavigate } from 'react-router'
 
 const LoginPortal = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const user = useUserContext()
   const { setToken } = user
+  const navigate = useNavigate()
 
   const onLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
       const res = await axiosInstance.post('/login', { id: username, password })
-      const { token } = res.data
-      setToken(token)
-      user.setUsername(username)
+      if (res.status === 200) {
+        const { token } = res.data
+        setToken(token)
+        user.setUsername(username)
+        navigate('/')
+      }
     } catch (err) {
+      showError('Username or password error.')
       console.error(err)
     }
   }
