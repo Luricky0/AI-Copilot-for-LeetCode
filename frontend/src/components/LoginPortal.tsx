@@ -30,8 +30,10 @@ const LoginPortal = () => {
 
   const onRegister = async () => {
     try {
-      fetchRegister({ id: username, password }, { setToken })
+      await fetchRegister({ id: username, password }, { setToken })
+      navigate('/')
     } catch (error) {
+      showError('User existed')
       console.error(error)
     }
   }
