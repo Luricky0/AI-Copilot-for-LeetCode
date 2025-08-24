@@ -6,6 +6,7 @@ import userRoutes from './routes/user.routes'
 import aiRoutes from './routes/ai.routes'
 import cors from 'cors'
 import dotenv from 'dotenv'
+import { KafkaConsumer } from './utils/kafka'
 dotenv.config()
 const { setGlobalDispatcher, ProxyAgent } = require('undici')
 const dispatcher = new ProxyAgent({
@@ -23,15 +24,29 @@ app.use(
   })
 )
 app.use(express.json())
-connectDB()
 
-app.get('/', (req, res) => {
-  res.send('API is running...')
-})
-app.use('/api', problemRoutes)
-app.use('/api', userRoutes)
-app.use('/api', aiRoutes)
+async function initServer() {
+  try {
+    await connectDB()
+    console.log('✅ Database connected')
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`)
-})
+    await KafkaConsumer.startConsumer()
+    console.log('✅ Kafka consumer started')
+
+    app.get('/', (req, res) => {
+      res.send('API is running...')
+    })
+    app.use('/api', problemRoutes)
+    app.use('/api', userRoutes)
+    app.use('/api', aiRoutes)
+
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on http://localhost:${PORT}`)
+    })
+  } catch (err) {
+    console.error('❌ Server initialization failed:', err)
+    process.exit(1)
+  }
+}
+
+initServer()

@@ -9,7 +9,7 @@ const kafka = new Kafka({
 const producer = kafka.producer()
 
 const initProducer = async () => {
-  await producer.connect() // 启动时连接一次
+  await producer.connect()
 }
 
 const sendCodeEvaluationRequest = async (
