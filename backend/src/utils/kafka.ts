@@ -3,7 +3,7 @@ import AIService from '../services/ai.service'
 
 const kafka = new Kafka({
   clientId: 'code-evaluator',
-  brokers: ['localhost:9092'],
+  brokers: ['kafka:9092'],
 })
 
 const producer = kafka.producer()
@@ -49,12 +49,13 @@ const startConsumer = async () => {
 
       const { title, code, model, embeddings } = payload
 
-      const result = await AIService.evaluateCode(
-        title,
-        code,
-        model,
-        embeddings
-      )
+      // const result = await AIService.evaluateCode(
+      //   title,
+      //   code,
+      //   model,
+      //   embeddings
+      // )
+      const result = 'yesyesyes'
       console.log('Evaluation result:', result)
     },
   })
