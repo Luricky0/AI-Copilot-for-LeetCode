@@ -1,5 +1,20 @@
 import deepseek from '../models/deepseek.model'
 import gemini from '../models/gemini.model'
+import { KafkaProducer } from '../utils/kafka'
+import { redis } from '../utils/reddis'
+import { v4 as uuidv4 } from 'uuid'
+
+const sendEvaluateCode = async (
+  title: string,
+  code: string,
+  model = 'deepseek',
+  embeddings: number[][] = [[]]
+) => {
+  const requestId = uuidv4()
+  redis.set(requestId, JSON.stringify({ status: 'PENDING' }), 'EX', 600)
+  await KafkaProducer.sendCodeEvaluationRequest(title, code, model, embeddings)
+  return {requestId}
+}
 
 const evaluateCode = async (
   title: string,
@@ -7,7 +22,7 @@ const evaluateCode = async (
   model = 'deepseek',
   embeddings: number[][] = [[]]
 ) => {
-  const embeddingsString = embeddings.map(e => e.join(',')).join(';');
+  const embeddingsString = embeddings.map((e) => e.join(',')).join(';')
   const prompt = `
       You are a professional LeetCode code reviewer. Review the user's submission using the following structured and concise format:
 
