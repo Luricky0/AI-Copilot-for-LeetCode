@@ -6,7 +6,7 @@ import userRoutes from './routes/user.routes'
 import aiRoutes from './routes/ai.routes'
 import cors from 'cors'
 import dotenv from 'dotenv'
-import { KafkaConsumer } from './utils/kafka'
+import { KafkaConsumer, KafkaProducer } from './utils/kafka'
 dotenv.config()
 const { setGlobalDispatcher, ProxyAgent } = require('undici')
 const dispatcher = new ProxyAgent({
@@ -30,6 +30,8 @@ async function initServer() {
     await connectDB()
     console.log('✅ Database connected')
 
+    await KafkaProducer.initProducer()
+    console.log('✅ Kafka producer started')
     await KafkaConsumer.startConsumer()
     console.log('✅ Kafka consumer started')
 

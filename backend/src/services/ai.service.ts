@@ -12,8 +12,19 @@ const sendEvaluateCode = async (
 ) => {
   const requestId = uuidv4()
   redis.set(requestId, JSON.stringify({ status: 'PENDING' }), 'EX', 600)
-  await KafkaProducer.sendCodeEvaluationRequest(title, code, model, embeddings)
-  return {requestId}
+  try {
+    await KafkaProducer.sendCodeEvaluationRequest(
+      title,
+      code,
+      model,
+      embeddings,
+      requestId
+    )
+  } catch (error) {
+    console.log(error)
+  }
+
+  return { requestId }
 }
 
 const evaluateCode = async (
@@ -104,6 +115,7 @@ const analyzeProblem = async (
 }
 
 const AIService = {
+  sendEvaluateCode,
   evaluateCode,
   getAnswer,
   analyzeProblem,

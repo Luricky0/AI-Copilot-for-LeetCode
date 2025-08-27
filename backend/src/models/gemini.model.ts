@@ -28,11 +28,15 @@ const createChat = async (prompt: string) => {
 }
 
 const getEmbedding = async (text: string) => {
-  const resp = await ai.models.embedContent({
-    model: 'gemini-embedding-exp-03-07',
-    contents: text,
-  })
-  return resp.embeddings as number[]
+  try {
+    const resp = await ai.models.embedContent({
+      model: 'gemini-embedding-exp-03-07',
+      contents: text,
+    })
+    return resp.embeddings as number[]
+  } catch (error) {
+    console.log('Gemini Error, no embedding generated')
+  }
 }
 
 const gemini = {

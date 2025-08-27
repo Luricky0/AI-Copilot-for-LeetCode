@@ -9,14 +9,29 @@ const addOneSubmission = async (
   model: string
 ) => {
   const embedding = await gemini.getEmbedding(code)
-  const newSubmission = new Submission({
-    userId,
-    problemId,
-    code,
-    timestamp: Date.now(),
-    embedding,
-  })
-  return await newSubmission.save()
+  try {
+    if (embedding) {
+      const newSubmission = new Submission({
+        userId,
+        problemId,
+        code,
+        timestamp: Date.now(),
+        embedding,
+      })
+
+      await newSubmission.save()
+    } else {
+      const newSubmission = new Submission({
+        userId,
+        problemId,
+        code,
+        timestamp: Date.now(),
+      })
+      return await newSubmission.save()
+    }
+  } catch (error) {
+    console.log('submission save error', error)
+  }
 }
 
 const getEmbedding = async (

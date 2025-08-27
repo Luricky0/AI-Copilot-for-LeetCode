@@ -2,7 +2,7 @@ import mongoose, { Schema, Document, Model, Types } from 'mongoose'
 
 export interface ISubmission extends Document {
   userId: Types.ObjectId
-  questionId: Types.ObjectId
+  problemId: Types.ObjectId
   code: string
   lang: string
   timestamp: Date
@@ -11,7 +11,7 @@ export interface ISubmission extends Document {
 
 const submissionSchema = new Schema<ISubmission>({
   userId: { type: Schema.Types.ObjectId, required: true },
-  questionId: { type: Schema.Types.ObjectId, required: true },
+  problemId: { type: Schema.Types.ObjectId, required: true },
   code: { type: String },
   lang: { type: String },
   timestamp: { type: Date, default: Date.now },

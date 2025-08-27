@@ -12,6 +12,8 @@ export const evaluateCode = async (req: Request, res: Response) => {
   try {
     const user = await UserService.getUserByToken(req)
 
+    if (!user) throw new ApiError(404, 'Invalid Token')
+
     if (user)
       await SubmissionSevice.addOneSubmission(
         user._id,
@@ -23,8 +25,9 @@ export const evaluateCode = async (req: Request, res: Response) => {
 
     if (userId) {
       const embedding = await SubmissionSevice.getEmbedding(userId, problemId)
+      console.log(embedding)
       if (embedding) {
-        const aiRes = await AIService.evaluateCode(
+        const aiRes = await AIService.sendEvaluateCode(
           title,
           code,
           model,
@@ -33,13 +36,13 @@ export const evaluateCode = async (req: Request, res: Response) => {
         res.status(200).json({
           message: aiRes,
         })
+      } else {
+        const aiRes = await AIService.sendEvaluateCode(title, code, model)
+        res.status(200).json({
+          message: aiRes,
+        })
       }
-    }
-
-    const aiRes = await AIService.evaluateCode(title, code, model)
-    res.status(200).json({
-      message: aiRes,
-    })
+    } else throw new ApiError(500, 'User data broken')
   } catch (error) {
     if (error instanceof ApiError) {
       console.log(error)

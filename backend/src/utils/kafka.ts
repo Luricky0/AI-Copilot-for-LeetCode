@@ -1,5 +1,6 @@
 import { Kafka } from 'kafkajs'
 import AIService from '../services/ai.service'
+import { redis } from './reddis'
 
 const kafka = new Kafka({
   clientId: 'code-evaluator',
@@ -16,15 +17,16 @@ const sendCodeEvaluationRequest = async (
   title: string,
   code: string,
   model = 'deepseek',
-  embeddings: number[][] = [[]]
+  embeddings: number[][] = [[]],
+  requestId: string
 ) => {
   const message = {
     title,
     code,
     model,
     embeddings,
+    requestId,
   }
-
   await producer.send({
     topic: 'code-evaluation',
     messages: [{ value: JSON.stringify(message) }],
@@ -47,7 +49,7 @@ const startConsumer = async () => {
       const payload = JSON.parse(message.value!.toString())
       console.log('Received message:', payload)
 
-      const { title, code, model, embeddings } = payload
+      const { title, code, model, embeddings, requestId } = payload
 
       // const result = await AIService.evaluateCode(
       //   title,
@@ -55,7 +57,8 @@ const startConsumer = async () => {
       //   model,
       //   embeddings
       // )
-      const result = 'yesyesyes'
+      const result = { status: 'ok', data: 'yesyesyes' }
+      redis.set(requestId, JSON.stringify(result), 'EX', 300)
       console.log('Evaluation result:', result)
     },
   })
