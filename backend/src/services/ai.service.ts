@@ -11,7 +11,7 @@ const sendEvaluateCode = async (
   embeddings: number[][] = [[]]
 ) => {
   const requestId = uuidv4()
-  redis.set(requestId, JSON.stringify({ status: 'PENDING' }), 'EX', 600)
+  await redis.set(requestId, JSON.stringify({ status: 'PENDING' }), 'EX', 600)
   try {
     await KafkaProducer.sendCodeEvaluationRequest(
       title,

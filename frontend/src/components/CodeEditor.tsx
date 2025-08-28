@@ -11,7 +11,12 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { Problem, ProblemRecord } from '../api/problemApi'
 import { completeProblem, getCompletedProblems } from '../api/userApi'
-import { getAnalyzation, getAnswer, getEvaluation } from '../api/aiAPi'
+import {
+  getAnalyzation,
+  getAnswer,
+  getEvaluation,
+  getResultByRequestId,
+} from '../api/aiAPi'
 import ReactMarkdown from 'react-markdown'
 
 const CodeLangMap: Record<number, string> = {
@@ -51,6 +56,7 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
   const [AIState, setAIState] = useState('')
   const [isAILoading, setIsAILoading] = useState(false)
   const [evaluation, setEvaluation] = useState('')
+  const [requestId, setRequestId] = useState('')
   const [completedProblemsIDs, setCompletedProblemsIDs] = useState<
     ProblemRecord[]
   >([])
@@ -78,10 +84,39 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
       setIsAILoading(true)
       setAIState('evaluate')
       const res = await getEvaluation(problem.title, code, AIModel)
-      setEvaluation(res?.data?.message)
-      setIsAILoading(false)
+      if (res) setRequestId(res.data.requestId)
     }
   }
+
+  useEffect(() => {
+    console.log({ isAILoading, AIState, requestId })
+    if (!isAILoading || AIState !== 'evaluate' || !requestId) return
+    let isCancelled = false
+    const fetchResult = async () => {
+      if (isCancelled) return
+      try {
+        console.log('polling')
+        const res = await getResultByRequestId(requestId)
+        console.log(res)
+        if (res?.status !== 200) {
+          setTimeout(fetchResult, 1000)
+        } else {
+          if (!isCancelled) {
+            setEvaluation(res.data)
+            setIsAILoading(false)
+          }
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    fetchResult()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [isAILoading, AIState, requestId])
 
   const onAIAnswer = async () => {
     if (!isAILoading) {

@@ -58,8 +58,7 @@ const startConsumer = async () => {
       //   embeddings
       // )
       const result = { status: 'ok', data: 'yesyesyes' }
-      redis.set(requestId, JSON.stringify(result), 'EX', 300)
-      console.log('Evaluation result:', result)
+      await redis.set(requestId, JSON.stringify(result), 'EX', 300)
     },
   })
 }

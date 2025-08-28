@@ -25,7 +25,6 @@ export const evaluateCode = async (req: Request, res: Response) => {
 
     if (userId) {
       const embedding = await SubmissionSevice.getEmbedding(userId, problemId)
-      console.log(embedding)
       if (embedding) {
         const aiRes = await AIService.sendEvaluateCode(
           title,
@@ -33,14 +32,10 @@ export const evaluateCode = async (req: Request, res: Response) => {
           model,
           embedding
         )
-        res.status(200).json({
-          message: aiRes,
-        })
+        res.status(200).json(aiRes)
       } else {
         const aiRes = await AIService.sendEvaluateCode(title, code, model)
-        res.status(200).json({
-          message: aiRes,
-        })
+        res.status(200).json(aiRes)
       }
     } else throw new ApiError(500, 'User data broken')
   } catch (error) {
