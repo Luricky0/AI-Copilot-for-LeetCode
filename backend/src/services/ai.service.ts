@@ -22,6 +22,7 @@ const sendEvaluateCode = async (
     )
   } catch (error) {
     console.log(error)
+    throw error
   }
 
   return { requestId }

@@ -10,13 +10,13 @@ export const getEvaluation = async (
     return res
   } catch (error) {
     console.log(error)
+    return null
   }
 }
 
 export const getResultByRequestId = async (id: string) => {
   try {
     const res = await axiosInstance.get(`/request?requestId=${id}`)
-    console.log(res)
     return res
   } catch (error) {
     console.log(error)
@@ -40,6 +40,7 @@ export const getAnswer = async (
     return res
   } catch (error) {
     console.log(error)
+    return null
   }
 }
 
@@ -53,5 +54,6 @@ export const getAnalyzation = async (
     return res
   } catch (error) {
     console.log(error)
+    return null
   }
 }

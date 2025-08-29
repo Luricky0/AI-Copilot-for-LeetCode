@@ -1,13 +1,28 @@
 import { Request, Response } from 'express'
 import { redis } from '../utils/reddis'
 export const getResultByRequestId = async (req: Request, res: Response) => {
-  const requestId = req.query.requestId as string
-  if (requestId) {
+  try {
+    const requestId = req.query.requestId as string
+    if (!requestId) {
+      return res.status(400).json({ message: 'Bad request' })
+    }
+
     const data = await redis.get(requestId)
-    console.log('request', data)
-    if (data && JSON.parse(data).status === 'ok') res.status(200).json(data)
-    else res.status(500).send()
-  } else {
-    res.status(404).send()
+    if (!data) {
+      return res.status(404).json({ message: 'No such data pending' })
+    }
+
+    const parsed = JSON.parse(data)
+
+    if (parsed.status === 'ok') {
+      return res.status(200).json(parsed)
+    } else if (parsed.status === 'pending') {
+      return res.status(202).json({ message: 'Data not ready' })
+    } else {
+      return res.status(500).json({ message: 'Unexpected status' })
+    }
+  } catch (err) {
+    console.error('Error fetching result:', err)
+    return res.status(500).json({ message: 'Internal server error' })
   }
 }
