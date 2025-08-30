@@ -27,13 +27,16 @@ app.use(express.json())
 
 async function initServer() {
   try {
-    await connectDB()
-    console.log('✅ Database connected')
-
-    await KafkaProducer.initProducer()
-    console.log('✅ Kafka producer started')
-    await KafkaConsumer.startConsumer()
-    console.log('✅ Kafka consumer started')
+    
+    await Promise.all([
+      connectDB().then(() => console.log('✅ Database connected')),
+      KafkaProducer.initProducer().then(() =>
+        console.log('✅ Kafka producer started')
+      ),
+      KafkaConsumer.startConsumer().then(() =>
+        console.log('✅ Kafka consumer started')
+      ),
+    ])
 
     app.get('/', (req, res) => {
       res.send('API is running...')
