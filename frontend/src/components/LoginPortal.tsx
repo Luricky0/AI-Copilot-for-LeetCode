@@ -4,6 +4,7 @@ import { fetchRegister } from '../api/accountApi'
 import { useUserContext } from '../contexts/userContext'
 import { showError } from '../utils/messageManage'
 import { useNavigate } from 'react-router'
+import gateway from '../utils/gateway'
 
 const LoginPortal = () => {
   const [username, setUsername] = useState('')
@@ -15,7 +16,7 @@ const LoginPortal = () => {
   const onLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      const res = await axiosInstance.post('/login', { id: username, password })
+      const res = await gateway.post('/login', { id: username, password })
       if (res.status === 200) {
         const { token } = res.data
         setToken(token)

@@ -1,10 +1,11 @@
 import { useUserContext } from "../contexts/userContext";
 import useUser from "../hooks/useUser";
 import axiosInstance from "../utils/axiosInstance";
+import gateway from "../utils/gateway";
 
 export const fetchLogin = async(userHook:ReturnType<typeof useUser>,{username,password}:{username:string,password:string})=>{
   try{
-    const res = await axiosInstance.post('/login',{username,password})
+    const res = await gateway.post('/login',{username,password})
     const {token} = res.data;
     userHook.setToken(token);
     userHook.setUsername(username);
@@ -19,7 +20,7 @@ export const fetchRegister = async(
   { setToken }: { setToken: (token: string) => void }
 )=>{
   try{
-    const res = await axiosInstance.post('/register',{id,password})
+    const res = await gateway.post('/register',{id,password})
     const {token} = res.data;
     setToken(token);
   }catch(err){
