@@ -3,6 +3,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import authRouter from './routes/auth'
 import userRouter from './routes/user'
+import AIRouter from './routes/ai'
 
 dotenv.config()
 
@@ -12,6 +13,7 @@ app.use(express.json())
 
 app.use('/api', authRouter)
 app.use('/api',userRouter)
+app.use('/api',AIRouter)
 
 const PORT = process.env.PORT || 8080
 app.listen(PORT, () => {

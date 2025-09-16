@@ -49,6 +49,11 @@ router.post('/setgoal', (req, res) =>
 router.get('/recommendation', (req, res) =>
   transferToUserService(req, res, 'recommendation', 'get')
 )
-
+router.post('/addSubmission', (req, res) =>
+  transferToUserService(req, res, 'addSubmission')
+)
+router.get('/embedding', (req, res) =>
+  transferToUserService(req, res, 'embedding', 'get')
+)
 const userRouter = router
 export default userRouter
