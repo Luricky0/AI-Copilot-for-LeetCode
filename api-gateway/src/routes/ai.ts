@@ -21,5 +21,19 @@ const transferToAIService = async (
     res.status(err.response?.status || 500).json({ error: err.message })
   }
 }
+const evaluate = (req: Request, res: Response) => {
+  try {
+    const subRes = await axios.post(`${USER_SERVICE_URL}/addOneSubmission`)
+  } catch (err: any) {
+    console.log(err)
+    res.status(err.response?.status || 500).json({ error: err.message })
+  }
+}
+router.post('/evaluate')
+router.post('/answer', (req, res) => transferToAIService(req, res, 'answer'))
+router.post('/analyze', (req, res) => transferToAIService(req, res, 'analyze'))
+router.get('/request', (req, res) =>
+  transferToAIService(req, res, 'request', 'get')
+)
 const AIRouter = router
 export default AIRouter
