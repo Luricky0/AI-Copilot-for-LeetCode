@@ -27,6 +27,23 @@ services:
       - mongo
     env_file:
       - ./auth-service/.env
+  
+    ai-service:
+    build: ./ai-service
+    container_name: ai-service
+    ports:
+      - '3002:3002'
+    volumes:
+      - ./ai-service/src:/app/src  
+      - /app/node_modules
+    environment:
+      - PORT=3002
+      - REDIS_URL=redis://redis:6379
+      - MONGO_URL=mongodb://mongo:27017/codepilot
+    depends_on:
+      - mongo
+    env_file:
+      - ./ai-service/.env
 
   api-gateway:
     build: ./api-gateway
@@ -38,6 +55,7 @@ services:
       - /app/node_modules
     environment:
       - PORT=8081
+      - REDIS_URL=redis://redis:6379
     depends_on:
       - auth-service
     env_file:
