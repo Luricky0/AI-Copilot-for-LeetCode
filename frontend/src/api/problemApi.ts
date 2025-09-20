@@ -1,4 +1,5 @@
 import axiosInstance from '../utils/axiosInstance'
+import gateway from '../utils/gateway'
 
 interface TopicTag {
   name: string
@@ -44,7 +45,7 @@ export const fetchProblems = async (
   totalPages: number
   totalproblems: number
 }> => {
-  const res = await axiosInstance.get('/problems', {
+  const res = await gateway.get('/problems', {
     params: {
       page,
       limit,
