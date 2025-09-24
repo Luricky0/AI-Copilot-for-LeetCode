@@ -1,0 +1,355 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: codepilot
+---
+# Redis Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: codepilot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7
+          ports:
+            - containerPort: 6379
+---
+# Redis Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: codepilot
+spec:
+  selector:
+    app: redis
+  ports:
+    - port: 6379
+      targetPort: 6379
+  type: ClusterIP
+---
+# Mongo StatefulSet
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo
+  namespace: codepilot
+spec:
+  serviceName: mongo
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:
+        - name: mongo
+          image: mongo:6
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: mongo-data
+              mountPath: /data/db
+  volumeClaimTemplates:
+    - metadata:
+        name: mongo-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 5Gi
+---
+# Mongo Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+  namespace: codepilot
+spec:
+  selector:
+    app: mongo
+  ports:
+    - port: 27017
+      targetPort: 27017
+  type: ClusterIP
+---
+# Kafka StatefulSet
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kafka
+  namespace: codepilot
+spec:
+  serviceName: kafka
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      containers:
+        - name: kafka
+          image: bitnami/kafka:3.6
+          env:
+            - name: KAFKA_ENABLE_KRAFT
+              value: "yes"
+            - name: KAFKA_CFG_NODE_ID
+              value: "1"
+            - name: KAFKA_CFG_PROCESS_ROLES
+              value: "broker,controller"
+            - name: KAFKA_CFG_CONTROLLER_QUORUM_VOTERS
+              value: "1@kafka:9093"
+            - name: KAFKA_CFG_LISTENERS
+              value: "PLAINTEXT://:9092,CONTROLLER://:9093"
+            - name: KAFKA_CFG_ADVERTISED_LISTENERS
+              value: "PLAINTEXT://kafka:9092"
+            - name: KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP
+              value: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT"
+            - name: KAFKA_CFG_LOG_DIRS
+              value: "/bitnami/kafka/data"
+            - name: KAFKA_CFG_CONTROLLER_LISTENER_NAMES
+              value: "CONTROLLER"
+            - name: KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE
+              value: "true"
+          ports:
+            - containerPort: 9092
+          volumeMounts:
+            - name: kafka-data
+              mountPath: /bitnami/kafka/data
+  volumeClaimTemplates:
+    - metadata:
+        name: kafka-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 5Gi
+---
+# Kafka Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+  namespace: codepilot
+spec:
+  selector:
+    app: kafka
+  ports:
+    - port: 9092
+      targetPort: 9092
+  type: ClusterIP
+---
+# User-service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: codepilot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - name: user-service
+          image: my-user-service:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: REDIS_URL
+              value: redis://redis:6379
+            - name: MONGO_URL
+              value: mongodb://mongo:27017/codepilot
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - "nc -z redis 6379 && nc -z mongo 27017"
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+# User-service Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+  namespace: codepilot
+spec:
+  selector:
+    app: user-service
+  ports:
+    - port: 8080
+      targetPort: 8080
+  type: ClusterIP
+---
+# Auth-service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  namespace: codepilot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      containers:
+        - name: auth-service
+          image: my-auth-service:latest
+          ports:
+            - containerPort: 3001
+          env:
+            - name: PORT
+              value: "3001"
+            - name: MONGO_URL
+              value: mongodb://mongo:27017/codepilot
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - "nc -z mongo 27017"
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+# Auth-service Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  namespace: codepilot
+spec:
+  selector:
+    app: auth-service
+  ports:
+    - port: 3001
+      targetPort: 3001
+  type: ClusterIP
+---
+# AI-service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-service
+  namespace: codepilot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ai-service
+  template:
+    metadata:
+      labels:
+        app: ai-service
+    spec:
+      containers:
+        - name: ai-service
+          image: my-ai-service:latest
+          ports:
+            - containerPort: 3002
+          env:
+            - name: PORT
+              value: "3002"
+            - name: REDIS_URL
+              value: redis://redis:6379
+            - name: MONGO_URL
+              value: mongodb://mongo:27017/codepilot
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - "nc -z redis 6379 && nc -z mongo 27017"
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+# AI-service Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: ai-service
+  namespace: codepilot
+spec:
+  selector:
+    app: ai-service
+  ports:
+    - port: 3002
+      targetPort: 3002
+  type: ClusterIP
+---
+# API-gateway Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+  namespace: codepilot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+        - name: api-gateway
+          image: my-api-gateway:latest
+          ports:
+            - containerPort: 8081
+          env:
+            - name: PORT
+              value: "8081"
+            - name: REDIS_URL
+              value: redis://redis:6379
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - "nc -z auth-service 3001 && nc -z ai-service 3002 && nc -z user-service 8080"
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+# API-gateway Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway
+  namespace: codepilot
+spec:
+  selector:
+    app: api-gateway
+  ports:
+    - port: 8081
+      targetPort: 8081
+  type: NodePort

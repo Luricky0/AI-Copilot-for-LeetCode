@@ -42,6 +42,7 @@ services:
       - MONGO_URL=mongodb://mongo:27017/codepilot
     depends_on:
       - mongo
+      - redis
     env_file:
       - ./ai-service/.env
 
@@ -58,6 +59,8 @@ services:
       - REDIS_URL=redis://redis:6379
     depends_on:
       - auth-service
+      - ai-service
+      - user-service
     env_file:
       - ./api-gateway/.env
 
