@@ -19,7 +19,7 @@ const MessageBox = () => {
       unsubscribe()
     }
   }, [])
-  if (message == null) return
+  if (message == null) return null
   else if (message)
     return (
       <div className="fixed top-5 right-5 px-4 py-3 rounded-md shadow-md z-[9999]">
@@ -38,5 +38,6 @@ const MessageBox = () => {
         </button>
       </div>
     )
+    return null
 }
 export default MessageBox
