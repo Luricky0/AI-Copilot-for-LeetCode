@@ -28,7 +28,7 @@ services:
     env_file:
       - ./auth-service/.env
   
-    ai-service:
+  ai-service:
     build: ./ai-service
     container_name: ai-service
     ports:

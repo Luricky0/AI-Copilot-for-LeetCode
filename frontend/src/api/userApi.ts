@@ -1,8 +1,9 @@
 import axiosInstance from '../utils/axiosInstance'
+import gateway from '../utils/gateway'
 
 export const checkToken = async () => {
   try {
-    const res = await axiosInstance.get('/checktoken')
+    const res = await gateway.get('/checktoken')
     return res.data.valid
   } catch (error) {
     console.log(error)

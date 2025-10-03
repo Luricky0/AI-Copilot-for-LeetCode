@@ -15,10 +15,20 @@
   "description": "",
   "dependencies": {
     "axios": "^1.11.0",
+    "@google/genai": "^0.10.0",
+    "@types/express": "^5.0.3",
+    "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
-    "dotenv": "^17.2.2",
+    "dotenv": "^16.0.0",
     "express": "^5.1.0",
-    "jsonwebtoken": "^9.0.2"
+    "global-agent": "^3.0.0",
+    "ioredis": "^5.7.0",
+    "jsonwebtoken": "^9.0.2",
+    "kafkajs": "^2.2.4",
+    "mongoose": "^8.13.2",
+    "openai": "^4.97.0",
+    "undici": "^6.21.2",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",

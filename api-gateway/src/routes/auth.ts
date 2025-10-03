@@ -5,6 +5,16 @@ import axios from 'axios'
 const router = express.Router()
 const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL
 
+router.post('/checktoken',async(req:Request,res:Response)=>{
+ try {
+    const response = await axios.post(`${AUTH_SERVICE_URL}/checktoken`, req.body)
+    res.status(response.status).json(response.data)
+  } catch (err: any) {
+    res.status(err.response?.status || 500).json({ error: err.message })
+  }
+}
+)
+
 router.post('/register', async (req: Request, res: Response) => {
   try {
     const response = await axios.post(`${AUTH_SERVICE_URL}/register`, req.body)
