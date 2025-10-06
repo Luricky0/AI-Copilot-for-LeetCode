@@ -9,6 +9,7 @@ import { UserService } from '../services/user.service'
 import { randomInt } from 'crypto'
 import { ApiError } from '../utils/ApiError'
 
+//This is replaced by checkToken offered by Auth Service.
 export const checkToken = async (req: Request, res: Response) => {
   const token = req.headers.authorization?.split(' ')[1]
   if (token) {
@@ -25,6 +26,8 @@ export const checkToken = async (req: Request, res: Response) => {
     }
   }
 }
+
+// Replaced by login from Auth Service
 export const login = async (req: Request, res: Response) => {
   const { id, password } = req.body
   try {
@@ -40,6 +43,7 @@ export const login = async (req: Request, res: Response) => {
   }
 }
 
+// Replaced by register from Auth Service
 export const register = async (req: Request, res: Response) => {
   const { id, password } = req.body
   try {
@@ -55,6 +59,7 @@ export const register = async (req: Request, res: Response) => {
   }
 }
 
+// Mark a problem as liked or unliked
 export const likeProblem = async (req: Request, res: Response) => {
   const user = await UserService.getUserByToken(req)
   const { problemId, title } = req.body
@@ -80,6 +85,7 @@ export const likeProblem = async (req: Request, res: Response) => {
   }
 }
 
+// To get a list of liked problems
 export const getLikedProblems = async (req: Request, res: Response) => {
   try {
     const user = await UserService.getUserByToken(req)
@@ -146,6 +152,7 @@ export const getCompletedProblems = async (req: Request, res: Response) => {
   }
 }
 
+// To get the full list of ALL the goals that user sets
 export const getGoals = async (req: Request, res: Response) => {
   const token = req.headers.authorization?.split(' ')[1]
   if (!token) {
@@ -189,6 +196,7 @@ export const setGoal = async (req: Request, res: Response) => {
   }
 }
 
+// The recommendation is based on the user's goals and the topics the user is weak in.
 export const getRecommendation = async (req: Request, res: Response) => {
   const user = await UserService.getUserByToken(req)
   try {

@@ -23,6 +23,8 @@ const transferToAIService = async (
     res.status(err.response?.status || 500).json({ error: err.message })
   }
 }
+
+// Depends on User Service and AI Service
 const evaluate = async (req: Request, res: Response) => {
   try {
     const subRes = await axios.post(
@@ -39,6 +41,7 @@ const evaluate = async (req: Request, res: Response) => {
     res.status(err.response?.status || 500).json({ error: err.message })
   }
 }
+// Evaluation depends on 2 services
 router.post('/evaluate', evaluate)
 router.post('/answer', (req, res) => transferToAIService(req, res, 'answer'))
 router.post('/analyze', (req, res) => transferToAIService(req, res, 'analyze'))

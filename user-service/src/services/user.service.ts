@@ -197,6 +197,9 @@ const countGoal = async (goals: IGoalRecord[]) => {
   return tagCount
 }
 
+// Weight of Goal : 4*
+// Weight of Liked: +2
+// Weight of Completed: -2
 const generateTagNGoalBasedRecommendation = async (user: Iuser) => {
   const goalTags = await countGoal(user.goals)
   const completedTags = await countTag(user.completedProblemsIDs)
