@@ -67,7 +67,7 @@ export const fetchProblems = async (
 
 export const getProblem = async (problemId: string) => {
   try {
-    const res = await axiosInstance.get(`/problem?problemId=${problemId}`)
+    const res = await gateway.get(`/problem?problemId=${problemId}`)
     const { problem } = res.data
     return problem
   } catch (error) {
