@@ -5,21 +5,31 @@ import axios from 'axios'
 const router = express.Router()
 const USER_SERVICE_URL = process.env.USER_SERVICE_URL
 
-const transferToUserService = async (
+export const transferToUserService = async (
   req: Request,
   res: Response,
   url: string,
   method: 'get' | 'post' = 'post'
 ) => {
   try {
+    const targetUrl = `${USER_SERVICE_URL}/${url.replace(/^\/+/, '')}`
+
+    const axiosConfig = {
+      headers: req.headers,
+      params: req.query, 
+    }
+
     const response =
       method === 'post'
-        ? await axios.post(`${USER_SERVICE_URL}/${url}`, req.body)
-        : await axios.get(`${USER_SERVICE_URL}/${url}`, { params: req.query })
+        ? await axios.post(targetUrl, req.body, axiosConfig)
+        : await axios.get(targetUrl, axiosConfig)
+
     res.status(response.status).json(response.data)
   } catch (err: any) {
-    console.log(err)
-    res.status(err.response?.status || 500).json({ error: err.message })
+    console.error('Gateway Error:', err.message)
+    res.status(err.response?.status || 500).json({
+      error: err.response?.data || err.message,
+    })
   }
 }
 
