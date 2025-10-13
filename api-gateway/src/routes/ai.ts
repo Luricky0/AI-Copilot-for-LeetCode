@@ -6,21 +6,31 @@ const router = express.Router()
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL
 const USER_SERVICE_URL = process.env.USER_SERVICE_URL
 
-const transferToAIService = async (
+export const transferToAIService = async (
   req: Request,
   res: Response,
   url: string,
   method: 'get' | 'post' = 'post'
 ) => {
   try {
+    const targetUrl = `${AI_SERVICE_URL}/${url.replace(/^\/+/, '')}`
+
+    const axiosConfig = {
+      headers: req.headers,
+      params: req.query, 
+    }
+
     const response =
       method === 'post'
-        ? await axios.post(`${AI_SERVICE_URL}/${url}`, req.body)
-        : await axios.get(`${AI_SERVICE_URL}/${url}`, { params: req.query })
+        ? await axios.post(targetUrl, req.body, axiosConfig)
+        : await axios.get(targetUrl, axiosConfig)
+
     res.status(response.status).json(response.data)
   } catch (err: any) {
-    console.log(err)
-    res.status(err.response?.status || 500).json({ error: err.message })
+    console.error('Gateway Error:', err.message)
+    res.status(err.response?.status || 500).json({
+      error: err.response?.data || err.message,
+    })
   }
 }
 
