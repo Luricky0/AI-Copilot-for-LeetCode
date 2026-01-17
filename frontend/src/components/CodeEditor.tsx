@@ -91,7 +91,7 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
         problem.title,
         problem.content,
         CodeLangMap[lang],
-        AIModel
+        AIModel,
       )
       setEvaluation(res?.data?.message)
       setIsAILoading(false)
@@ -152,7 +152,6 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
               value={AIModel}
               onChange={(e) => setAIModel(e.target.value)}
               className="border px-2 py-1 rounded">
-              <option value="deepseek">Deepseek</option>
               <option value="gemini">Gemini</option>
             </select>
             <FontAwesomeIcon

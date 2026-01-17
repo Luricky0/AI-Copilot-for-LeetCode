@@ -4,18 +4,29 @@ import { fetchRegister } from '../api/accountApi'
 import { useUserContext } from '../contexts/userContext'
 import { showError } from '../utils/messageManage'
 import { useNavigate } from 'react-router'
+import { Turnstile } from '@marsidev/react-turnstile'
 
 const LoginPortal = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+
   const user = useUserContext()
   const { setToken } = user
   const navigate = useNavigate()
 
-  const onLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const tryLogin = async (id: string, password: string) => {
+    if (!captchaToken) {
+      showError('Please complete the captcha')
+      return
+    }
     try {
-      const res = await axiosInstance.post('/login', { id: username, password })
+      const res = await axiosInstance.post('/login', {
+        id: username,
+        password,
+        captchaToken,
+      })
+
       if (res.status === 200) {
         const { token } = res.data
         setToken(token)
@@ -28,13 +39,26 @@ const LoginPortal = () => {
     }
   }
 
+  const onLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    await tryLogin(username, password)
+  }
+
   const onRegister = async () => {
+    if (!captchaToken) {
+      showError('Please complete the captcha')
+      return
+    }
     try {
-      fetchRegister({ id: username, password }, { setToken })
+      await fetchRegister(
+        { id: username, password, captchaToken },
+        { setToken },
+      )
     } catch (error) {
       console.error(error)
     }
   }
+
   return (
     <div className="h-screen flex justify-evenly place-items-center">
       <div className="flex gap-2 items-center">
@@ -45,6 +69,7 @@ const LoginPortal = () => {
         className="rounded w-96 bg-white p-4 flex flex-col space-y-4 items-center justify-center"
         onSubmit={onLogin}>
         <h2>Login</h2>
+
         <div className="w-full">
           <label
             htmlFor="username"
@@ -72,6 +97,14 @@ const LoginPortal = () => {
             className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300"
             placeholder="Enter your password"
             onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+
+        <div className="py-2">
+          <Turnstile
+            siteKey="0x4AAAAAACM9-o5h76brkYd2"
+            onSuccess={(token) => setCaptchaToken(token)}
+            onExpire={() => setCaptchaToken(null)}
           />
         </div>
 

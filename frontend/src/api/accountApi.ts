@@ -15,7 +15,7 @@ export const fetchLogin = async(userHook:ReturnType<typeof useUser>,{username,pa
 }
 
 export const fetchRegister = async(
-  { id, password }: { id: string; password: string },
+  { id, password, captchaToken }: { id: string; password: string, captchaToken: string },
   { setToken }: { setToken: (token: string) => void }
 )=>{
   try{

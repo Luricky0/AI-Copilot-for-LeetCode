@@ -1,10 +1,9 @@
-import deepseek from '../models/deepseek.model'
 import gemini from '../models/gemini.model'
 
 const evaluateCode = async (
   title: string,
   code: string,
-  model = 'deepseek',
+  model = 'gemini',
   embeddings: number[][] = [[]]
 ) => {
   const embeddingsString = embeddings.map(e => e.join(',')).join(';');
@@ -26,10 +25,8 @@ const evaluateCode = async (
       ${code}
       \`\`\`
       `
-  if (model == 'deepseek') {
-    const response = await deepseek.createChat(prompt)
-    return response
-  } else if (model == 'gemini') {
+
+  if (model == 'gemini') {
     const response = await gemini.createChat(prompt)
     return response
   }
@@ -48,10 +45,7 @@ const getAnswer = async (
     Content: ${cleanedContent}
      `
 
-  if (model == 'deepseek') {
-    const response = await deepseek.createChat(prompt)
-    return response
-  } else if (model == 'gemini') {
+  if (model == 'gemini') {
     const response = await gemini.createChat(prompt)
     return response
   }
@@ -79,10 +73,7 @@ const analyzeProblem = async (
   ### Problem Description:
   ${content}
   `
-  if (model == 'deepseek') {
-    const response = await deepseek.createChat(prompt)
-    return response
-  } else if (model == 'gemini') {
+  if (model == 'gemini') {
     const response = await gemini.createChat(prompt)
     return response
   }

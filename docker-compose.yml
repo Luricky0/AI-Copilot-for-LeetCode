@@ -2,10 +2,11 @@ services:
   backend:
     build: ./backend
     ports:
-      - '8080:8080'
+      - '8080:5000'
     volumes:
-      - ./backend:/app
-      - /app/node_modules
+      - ./backend:/app:cached
+    env_file:
+      - ./.env
     environment:
       - REDIS_URL=redis://redis:6379
       - MONGO_URL=mongodb://mongo:27017/codepilot
