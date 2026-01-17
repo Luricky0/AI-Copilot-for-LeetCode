@@ -1,42 +1,46 @@
-import { GoogleGenAI } from '@google/genai'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 import dotenv from 'dotenv'
 import { ApiError } from '../utils/ApiError'
-
+import { Agent } from 'undici';
 dotenv.config()
-
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
-const geminiModel = ai.models
-
-const createChat = async (prompt: string) => {
-  let retries = 3
-  while (retries--) {
-    try {
-      const response = await geminiModel.generateContent({
-        model: 'gemini-2.0-flash',
-        contents: prompt,
-      })
-      return await response.text
-    } catch (err: any) {
-      if (err.status === 503 && retries > 0) {
-        console.warn('Gemini overloaded. Retrying...')
-        await new Promise((res) => setTimeout(res, 1000))
-        continue
-      }
-      throw new ApiError(500, 'Gemini server error')
-    }
+const directAgent = new Agent({
+  connect: {
+    timeout: 30000,
   }
-}
+});
 
+const apiKey = (process.env.GEMINI_API_KEY || '').trim();
+const genAI = new GoogleGenerativeAI(apiKey);
+
+export const createChat = async (prompt: string) => {
+  try {
+    const model = genAI.getGenerativeModel({ 
+      model: 'gemini-2.5-flash' 
+    }, {
+      baseUrl: "https://generativelanguage.googleapis.com",
+    });
+
+    const result = await model.generateContent(prompt);
+    return result.response.text();
+  } catch (err: any) {
+    console.error("Gemini Error Detail:", err);
+    throw err;
+  }
+};
 const getEmbedding = async (text: string) => {
-  const resp = await ai.models.embedContent({
-    model: 'gemini-embedding-exp-03-07',
-    contents: text,
-  })
-  return resp.embeddings as number[]
+  try {
+    const model = genAI.getGenerativeModel({ model: 'text-embedding-004' })
+    const result = await model.embedContent(text)
+    const embedding = result.embedding
+    return embedding.values
+  } catch (err: any) {
+    throw new ApiError(500, `Embedding Error: ${err.message}`)
+  }
 }
 
 const gemini = {
   createChat,
   getEmbedding,
 }
+
 export default gemini

@@ -54,7 +54,7 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
   const [completedProblemsIDs, setCompletedProblemsIDs] = useState<
     ProblemRecord[]
   >([])
-  const [AIModel, setAIModel] = useState('')
+  const [AIModel, setAIModel] = useState('gemini')
 
   const load = async () => {
     try {

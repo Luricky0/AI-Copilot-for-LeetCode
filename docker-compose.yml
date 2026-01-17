@@ -10,6 +10,9 @@ services:
     environment:
       - REDIS_URL=redis://redis:6379
       - MONGO_URL=mongodb://mongo:27017/codepilot
+      - HTTP_PROXY=
+      - HTTPS_PROXY=
+      - NO_PROXY=*
     depends_on:
       - redis
       - mongo

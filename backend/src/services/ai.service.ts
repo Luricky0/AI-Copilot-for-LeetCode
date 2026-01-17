@@ -36,7 +36,7 @@ const getAnswer = async (
   title: string,
   content: string,
   lang: string,
-  model = 'deepseek'
+  model = 'gemini'
 ) => {
   const cleanedContent = content.split('Example')[0].trim()
   const prompt = `Please solve the following LeetCode problem and only return the code in ${lang}. 
@@ -54,7 +54,7 @@ const getAnswer = async (
 const analyzeProblem = async (
   title: string,
   content: string,
-  model = 'deepseek'
+  model = 'gemini'
 ) => {
   const prompt = `
   You are a LeetCode assistant that helps users understand algorithm problems.

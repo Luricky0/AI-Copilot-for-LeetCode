@@ -7,13 +7,6 @@ import aiRoutes from './routes/ai.routes'
 import cors from 'cors'
 import dotenv from 'dotenv'
 dotenv.config()
-const { setGlobalDispatcher, ProxyAgent } = require('undici')
-const dispatcher = new ProxyAgent({
-  uri: new URL('http://127.0.0.1:7890').toString(),
-})
-
-setGlobalDispatcher(dispatcher)
-
 const app = express()
 const PORT = process.env.PORT || 5000
 app.use(

@@ -1,141 +1,120 @@
-import { Request, Response } from 'express'
+import { Request, Response, NextFunction } from 'express'
 import AIService from '../services/ai.service'
 import { ApiError } from '../utils/ApiError'
 import { UserService } from '../services/user.service'
-import { SubmissionSevice } from '../services/submission.service'
 import { Types } from 'mongoose'
-import { redis } from '../utils/reddis'
 import { hash } from '../utils/hash'
+import { redis } from '../utils/reddis'
+import { SubmissionService } from '../services/submission.service'
 
 const checkRateLimit = async (id: string) => {
   const today = new Date().toISOString().slice(0, 10)
   const key = `ratelimit:createChat:${id}:${today}`
-  const DAILY_LIMIT = 5
-  const currentCount = await redis.incr(key)
+  const DAILY_LIMIT = 50
 
+  const currentCount = await redis.incr(key)
   if (currentCount === 1) {
     await redis.expire(key, 86400)
   }
-  if (currentCount > DAILY_LIMIT) {
-    throw new ApiError(429, 'Limited')
-  }
 
+  if (currentCount > DAILY_LIMIT) {
+    throw new ApiError(429, 'Request Limit')
+  }
   return currentCount
 }
 
-export const evaluateCode = async (req: Request, res: Response) => {
+export const evaluateCode = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const { title, code, model, problemId } = req.body
   try {
     const user = await UserService.getUserByToken(req)
+    if (!user) throw new ApiError(401, 'Invalid Token')
 
-    if (!user) throw new ApiError(404, 'Invalid Token')
+    await checkRateLimit(user.id)
 
-    if (user) {
-      await checkRateLimit(user.id)
-      await SubmissionSevice.addOneSubmission(
-        user._id,
-        new Types.ObjectId(problemId),
-        code,
-        model
-      )
-    }
-    const userId = user?._id
+    await SubmissionService.addOneSubmission(
+      user._id,
+      new Types.ObjectId(problemId),
+      code,
+      model,
+    )
 
-    if (userId) {
-      const embedding = await SubmissionSevice.getEmbedding(userId, problemId)
-      if (embedding) {
-        const aiRes = await AIService.evaluateCode(
-          title,
-          code,
-          model,
-          embedding
-        )
-        res.status(200).json(aiRes)
-      } else {
-        const aiRes = await AIService.evaluateCode(title, code, model)
-        res.status(200).json(aiRes)
-      }
-    } else throw new ApiError(500, 'User data broken')
+    const embedding = await SubmissionService.getEmbedding(user._id, problemId)
+    console.log(embedding)
+    const aiRes = await AIService.evaluateCode(
+      title,
+      code,
+      model,
+      embedding ?? undefined,
+    )
+
+    return res.status(200).json(aiRes)
   } catch (error) {
-    if (error instanceof ApiError) {
-      console.log(error)
-      res.status(error.statusCode).json(error.message)
-    }
+    handleControllerError(error, res)
   }
 }
 
 export const getAnswer = async (req: Request, res: Response) => {
   const { title, content, lang, model } = req.body
-  const cacheKey = `llm:answer:${title}:${lang}:${model || 'default'}:${hash(
-    content
-  )}`
+  const cacheKey = `llm:answer:${title}:${lang}:${model || 'default'}:${hash(content)}`
 
   try {
     const user = await UserService.getUserByToken(req)
-    if (!user) throw new ApiError(404, 'Invalid Token')
+    if (!user) throw new ApiError(401, 'Invalid Token')
+
     await checkRateLimit(user.id)
 
     const cached = await redis.get(cacheKey)
     if (cached) {
-      return res.status(200).json({
-        message: cached,
-        source: 'cache',
-      })
+      return res.status(200).json({ message: cached, source: 'cache' })
     }
-    if (model) {
-      const aiRes = await AIService.getAnswer(title, content, lang, model)
-      await redis.set(cacheKey, aiRes!, 'EX', 3600)
-      res.status(200).json({
-        message: aiRes,
-      })
-    } else {
-      const aiRes = await AIService.getAnswer(title, content, lang)
-      await redis.set(cacheKey, aiRes!, 'EX', 3600)
-      res.status(200).json({
-        message: aiRes,
-      })
+
+    const aiRes = await AIService.getAnswer(title, content, lang, model)
+
+    if (aiRes) {
+      await redis.set(cacheKey, aiRes, 'EX', 3600)
     }
+
+    return res.status(200).json({ message: aiRes })
   } catch (error) {
-    if (error instanceof ApiError) {
-      console.log(error)
-      res.status(error.statusCode).json(error.message)
-    }
+    handleControllerError(error, res)
   }
 }
 
 export const getAnalyzation = async (req: Request, res: Response) => {
-  const { title, content, model, problemId } = req.body
-  const cacheKey = `llm:analyzation:${title}:${model}:${hash(content)}`
+  const { title, content, model } = req.body
+  const cacheKey = `llm:analyzation:${title}:${model || 'default'}:${hash(content)}`
+
   try {
     const user = await UserService.getUserByToken(req)
-    if (!user) throw new ApiError(404, 'Invalid Token')
+    if (!user) throw new ApiError(401, 'Invalid Token')
     await checkRateLimit(user.id)
 
     const cache = await redis.get(cacheKey)
     if (cache) {
-      res.status(200).json({
-        message: cache,
-        source: 'cache',
-      })
+      return res.status(200).json({ message: cache, source: 'cache' })
     }
 
-    if (model) {
-      const aiRes = await AIService.analyzeProblem(title, content, model)
-      await redis.set(cacheKey, aiRes!, 'EX', 3600)
-      res.status(200).json({
-        message: aiRes,
-      })
-    } else {
-      const aiRes = await AIService.analyzeProblem(title, content)
-      await redis.set(cacheKey, aiRes!, 'EX', 3600)
-      res.status(200).json({
-        message: aiRes,
-      })
+    const aiRes = await AIService.analyzeProblem(title, content, model)
+
+    if (aiRes) {
+      await redis.set(cacheKey, aiRes, 'EX', 3600)
     }
+
+    return res.status(200).json({ message: aiRes })
   } catch (error) {
-    if (error instanceof ApiError) {
-      console.log(error)
-      res.status(error.statusCode).json(error.message)
-    }
+    handleControllerError(error, res)
+  }
+}
+
+const handleControllerError = (error: any, res: Response) => {
+  console.error(error)
+  if (error instanceof ApiError) {
+    res.status(error.statusCode).json({ error: error.message })
+  } else {
+    res.status(500).json({ error: 'Internal Server Error' })
   }
 }

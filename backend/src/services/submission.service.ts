@@ -33,7 +33,7 @@ const getEmbedding = async (
   return embeddings
 }
 
-export const SubmissionSevice = {
+export const SubmissionService = {
   addOneSubmission,
   getEmbedding,
 }
