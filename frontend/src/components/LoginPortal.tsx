@@ -114,12 +114,12 @@ const LoginPortal = () => {
           Login
         </button>
 
-        <button
+        {/* <button
           type="button"
           onClick={onRegister}
           className="w-full bg-black text-white py-2 rounded hover:bg-yellow-700 transition">
           Register
-        </button>
+        </button> */}
       </form>
     </div>
   )

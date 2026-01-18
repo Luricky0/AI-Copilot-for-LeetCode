@@ -41,7 +41,7 @@ const ProblemList = ({
           searchQuery,
           difficultyFilter,
           likedOnly.toString(),
-          completedOnly.toString()
+          completedOnly.toString(),
         )
 
         if (page > data.totalPages && data.totalPages > 0) {
@@ -52,7 +52,7 @@ const ProblemList = ({
         setLikedProblemsIDs(await getLikedProblems())
         setCompletedProblemsIDs(await getCompletedProblems())
         setTotalPages(data.totalPages)
-        setproblems(data.problems)
+        setproblems([...data.problems])
       } catch (err) {
         console.error('Error fetching problems:', err)
       } finally {
@@ -85,19 +85,12 @@ const ProblemList = ({
 
   useEffect(() => {
     load()
-  }, [page])
+  }, [page, difficultyFilter, likedOnly, completedOnly])
 
   useEffect(() => {
     load()
-  }, [difficultyFilter])
-
-  useEffect(() => {
-    load()
-  }, [likedOnly])
-
-  useEffect(() => {
-    load()
-  }, [completedOnly])
+    setPage(1)
+  }, [difficultyFilter, likedOnly, completedOnly])
   if (loading) {
     return <div className="p-4">Loading...</div>
   }
@@ -173,14 +166,14 @@ const ProblemList = ({
               q.difficulty === 'Easy'
                 ? 'text-green-500'
                 : q.difficulty === 'Medium'
-                ? 'text-yellow-500'
-                : 'text-red-500'
+                  ? 'text-yellow-500'
+                  : 'text-red-500'
             }`}>
               {q.difficulty}
             </div>
             <div className="grid grid-cols-[1fr_1fr] items-center ">
               {likedProblemsIDs?.some(
-                (item: { problemId: string }) => item.problemId === q._id
+                (item: { problemId: string }) => item.problemId === q._id,
               ) ? (
                 <i
                   className="fa fa-heart text-red-500 fa-2x"
@@ -193,7 +186,7 @@ const ProblemList = ({
               )}
 
               {completedProblemsIDs?.some(
-                (item: { problemId: string }) => item.problemId === q._id
+                (item: { problemId: string }) => item.problemId === q._id,
               ) ? (
                 <FontAwesomeIcon
                   icon={faCircleCheck}

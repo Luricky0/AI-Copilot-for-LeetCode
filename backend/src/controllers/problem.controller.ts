@@ -13,9 +13,10 @@ const escapeRegex = (text: string): string => {
 }
 
 export const getPaginatedProblems = async (req: Request, res: Response) => {
-  const { page, limit, skip, likedOnly, completedOnly } = req.query
-  const searchQuery = req.query.searchQuery as string | undefined
-  const difficultyFilter = req.query.searchQuery as string | undefined
+  const { page, limit, likedOnly, completedOnly } = req.query
+  const searchQuery = req.query.search as string | undefined
+  const difficultyFilter = req.query.difficulty as string | undefined
+  const skip = (Number(page) - 1) * Number(limit)
   try {
     if (likedOnly === 'true' || completedOnly === 'true') {
       const user = await UserService.getUserByToken(req)
@@ -27,7 +28,7 @@ export const getPaginatedProblems = async (req: Request, res: Response) => {
         difficultyFilter,
         likedOnly === 'true',
         completedOnly === 'true',
-        user
+        user,
       )
       res.status(200).json(getPageRes)
     } else {
@@ -39,7 +40,7 @@ export const getPaginatedProblems = async (req: Request, res: Response) => {
         difficultyFilter,
         likedOnly === 'true',
         completedOnly === 'true',
-        null
+        null,
       )
       res.status(200).json(getPageRes)
     }

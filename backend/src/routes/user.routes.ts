@@ -17,7 +17,7 @@ const router = express.Router()
 
 router.get('/checktoken', checkToken)
 router.post('/login', validateCaptcha, login)
-router.post('/register', validateCaptcha, register)
+// router.post('/register', validateCaptcha, register)
 router.post('/like', likeProblem)
 router.get('/liked', getLikedProblems)
 router.post('/complete', completeProblem)
