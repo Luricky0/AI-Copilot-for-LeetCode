@@ -51,7 +51,7 @@ export const evaluateCode = async (
       embedding ?? undefined,
     )
 
-    return res.status(200).json(aiRes)
+    return res.status(200).json({ message: aiRes })
   } catch (error) {
     handleControllerError(error, res)
   }

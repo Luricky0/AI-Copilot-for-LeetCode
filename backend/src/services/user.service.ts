@@ -187,7 +187,7 @@ const countGoal = async (goals: IGoalRecord[]) => {
         allTagNames.filter((tag) => {
           const tagWords = tag.toLowerCase().split(/\s+/)
           return tagWords.includes(w)
-        })
+        }),
       )
       for (const t of matchedTags) {
         tagCount[t] ? (tagCount[t] += 1) : (tagCount[t] = 1)
@@ -213,10 +213,10 @@ const generateTagNGoalBasedRecommendation = async (user: Iuser) => {
     scoredTags[r] = (scoredTags[r] || 0) - 2
   }
   const completedIds = user.completedProblemsIDs.map((r) =>
-    r.problemId.toString()
+    r.problemId.toString(),
   )
   const likedOnly = user.likedProblemsIDs.filter(
-    (r) => !completedIds.includes(r.problemId.toString())
+    (r) => !completedIds.includes(r.problemId.toString()),
   )
   const likedUnfinishedIds = likedOnly.map((r) => r.problemId)
   const likedProblems = await Problem.find({
@@ -226,7 +226,7 @@ const generateTagNGoalBasedRecommendation = async (user: Iuser) => {
   const scoredLiked = likedProblems.map((p) => {
     const score = p.topicTags.reduce(
       (sum, tag) => sum + (scoredTags[tag.name] || 0),
-      0
+      0,
     )
     return { problem: p, score }
   })
@@ -254,7 +254,7 @@ const generateTagNGoalBasedRecommendation = async (user: Iuser) => {
       .map((p) => {
         const score = p.topicTags.reduce(
           (sum, tag) => sum + (scoredTags[tag.name] || 0),
-          0
+          0,
         )
         return { problem: p, score }
       })
@@ -273,7 +273,7 @@ const toggleProblemStatus = async (
   user: Iuser,
   problemId: string,
   title: string,
-  type: 'complete' | 'like'
+  type: 'complete' | 'like',
 ) => {
   const problem = await Problem.findById(problemId)
   if (!problem) {
@@ -285,7 +285,7 @@ const toggleProblemStatus = async (
   const userList = user[targetListName] as IProblemRecord[]
 
   const existingIndex = userList.findIndex(
-    (p) => p.problemId.toString() === problemId
+    (p) => p.problemId.toString() === problemId,
   )
 
   if (existingIndex !== -1) {
@@ -300,13 +300,13 @@ const toggleProblemStatus = async (
 }
 
 const login = async (id: string, password: string) => {
-  const user = await User.findOne({ id })
+  const user = await User.findOne({ id: String(id) })
   if (!user) {
-    throw new ApiError(404, 'User not found')
+    throw new ApiError(404, 'Invalid credentials')
   } else {
     const isMatch = await user.comparePassword(password)
     if (!isMatch) {
-      throw new ApiError(404, 'Invalid credentials')
+      throw new ApiError(404, ' ID or password incorrec')
     }
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET!, {
       expiresIn: '7d',
